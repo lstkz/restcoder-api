@@ -1,0 +1,31 @@
+{
+  "_id": "common-services",
+  "description": "mongodb redis mysql postgress",
+  "services": {
+    "mongodb": {
+      "url": "mongodb://{{ip}}:27017/mydb",
+      "port": 27017,
+      "command": "service mongod start"
+    },
+    "redis": {
+      "url": "redis://{{ip}}:6379",
+      "port": 6379,
+      "command": "/redis-3.0.6/src/redis-server --daemonize yes"
+    },
+    "mysql": {
+      "url": "mysql://root:root@{{ip}}:3306/mydb",
+      "port": 3306,
+      "command": ""
+    },
+    "postgres": {
+      "url": "postgres://postgres:postgres@{{ip}}:5432/mydb",
+      "port": 5432,
+      "command": "service postgresql start"
+    },
+    "": {
+      "url": "",
+      "port": 0,
+      "command": ""
+    }
+  }
+}

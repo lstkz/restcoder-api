@@ -1,0 +1,7 @@
+{
+  "_id": 100,
+  "name": "Hello world",
+  "platforms": [
+    {"name": "nodejs", "codeTemplate": "nodejs_base"}
+  ]
+}

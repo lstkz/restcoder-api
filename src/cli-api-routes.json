@@ -1,0 +1,9 @@
+{
+  "/v1/problems/:problemId/code-templates/:platform": {
+    "get": {
+      "ctrl": "CLIController",
+      "method": "getCodeTemplate",
+      "public": true
+    }
+  }
+}
