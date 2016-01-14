@@ -42,7 +42,8 @@ passport.use(new BearerStrategy(function(token, done) {
 
 var app = express();
 app.set('port', config.WEB_SERVER_PORT);
-app.use(serveStatic(Path.join(__dirname, '../../restskill-app')));
+app.use(serveStatic(Path.join(__dirname, '../../restcoder-frontend')));
+app.use('/uploads', serveStatic(Path.join(__dirname, '../uploads')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -85,6 +86,9 @@ function loadRouter(path, middlewares, filename) {
                 throw new Error(`method ${endpoint.method} not found in controller ${endpoint.ctrl}`);
             }
             router[method](path, [
+                //function (req, res, next) {
+                //    setTimeout(next, 1000);
+                //},
                 function (req, res, next) {
                     if (endpoint.public) {
                         return next();

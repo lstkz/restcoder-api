@@ -1,3 +1,16 @@
 {
-  
+  "/v1/problems": {
+    "get": {
+      "ctrl": "ProblemController",
+      "method": "searchProblems",
+      "public": true
+    }
+  },
+  "/v1/problems/:id": {
+    "get": {
+      "ctrl": "ProblemController",
+      "method": "getProblem",
+      "public": true
+    }
+  }
 }

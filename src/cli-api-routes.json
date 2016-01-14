@@ -5,5 +5,12 @@
       "method": "getCodeTemplate",
       "public": true
     }
+  },
+  "/v1/problems/:problemId/submit": {
+    "post": {
+      "ctrl": "CLIController",
+      "method": "submit",
+      "public": true
+    }
   }
 }

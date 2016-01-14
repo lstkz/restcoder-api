@@ -17,6 +17,7 @@
   },
   "homepage": "https://gitlab.com/restcoder/restcoder-api#README",
   "dependencies": {
+    "adm-zip": "^0.4.7",
     "body-parser": "^1.14.2",
     "co": "^4.6.0",
     "config": "^1.17.1",
@@ -26,6 +27,7 @@
     "express-session": "^1.12.1",
     "mongoose": "^4.3.4",
     "morgan": "^1.6.1",
+    "multer": "^1.1.0",
     "mz": "^2.1.0",
     "passport": "^0.3.2",
     "passport-http-bearer": "^1.0.1",
