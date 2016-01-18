@@ -18,6 +18,7 @@
   "homepage": "https://gitlab.com/restcoder/restcoder-api#README",
   "dependencies": {
     "adm-zip": "^0.4.7",
+    "amqplib": "^0.4.0",
     "body-parser": "^1.14.2",
     "co": "^4.6.0",
     "config": "^1.17.1",
@@ -25,6 +26,7 @@
     "email-validator": "^1.0.3",
     "express": "^4.13.3",
     "express-session": "^1.12.1",
+    "express-socket.io-session": "^1.3.1",
     "mongoose": "^4.3.4",
     "morgan": "^1.6.1",
     "multer": "^1.1.0",
@@ -32,7 +34,9 @@
     "passport": "^0.3.2",
     "passport-http-bearer": "^1.0.1",
     "rox": "0.0.1-14",
+    "semver": "^5.1.0",
     "serve-static": "^1.10.0",
+    "socket.io": "^1.4.4",
     "underscore": "^1.8.3",
     "winston": "^2.1.1"
   }

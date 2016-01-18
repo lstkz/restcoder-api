@@ -12,5 +12,26 @@
       "method": "getProblem",
       "public": true
     }
+  },
+  "/v1/login": {
+    "post": {
+      "ctrl": "AuthController",
+      "method": "login",
+      "public": true
+    }
+  },
+  "/v1/register": {
+    "post": {
+      "ctrl": "AuthController",
+      "method": "register",
+      "public": true
+    }
+  },
+  "/v1/notify-progress/:notifyKey": {
+    "post": {
+      "ctrl": "CLIController",
+      "method": "notifyProgress",
+      "public": true
+    }
   }
 }

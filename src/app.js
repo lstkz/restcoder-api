@@ -24,15 +24,16 @@ var User = require("./models").User;
 var BearerToken = require("./models").BearerToken;
 var UnauthorizedError = require("./common/errors").UnauthorizedError;
 var ForbiddenError = require("./common/errors").ForbiddenError;
+var SubmissionQueueService = require("./services/SubmissionQueueService");
 
 
 passport.use(new BearerStrategy(function(token, done) {
     co(function* () {
-        var token = yield BearerToken.findById(token);
-        if (!token) {
+        var bearerToken = yield BearerToken.findById(token);
+        if (!bearerToken) {
             return done(null, false);
         }
-        var user = yield User.findById(token.userId);
+        var user = yield User.findById(bearerToken.userId);
         if (!user) {
             return done(null, false);
         }
@@ -117,7 +118,6 @@ var sessionMiddlewares = [
     passport.initialize(),
     passport.session()
 ];
-loadRouter("/api", sessionMiddlewares, "./api-routes.json");
 
 //cli api is JWT token based
 var bearerMiddlewares = [
@@ -129,6 +129,7 @@ var bearerMiddlewares = [
     }
 ];
 loadRouter("/cli-api", bearerMiddlewares, "./cli-api-routes.json");
+loadRouter("/api", bearerMiddlewares, "./api-routes.json");
 
 app.use(function (req, res) {
     res.status(404).json({error: "route not found"});
@@ -141,6 +142,13 @@ app.use(function (err, req, res, next) {//jshint ignore:line
     });
 });
 
-app.listen(app.get('port'), function () {
-    winston.info('Express server listening on port %d in %s mode', app.get('port'),  process.env.NODE_ENV);
+co(function* () {
+    var server = app.listen(app.get('port'), function () {
+        winston.info('Express server listening on port %d in %s mode', app.get('port'),  process.env.NODE_ENV);
+    });
+    yield SubmissionQueueService.init();
+    require("./socket").startUp(server);
+}).catch(e => {
+    console.log(e);
+    console.log(e.stack);
 });

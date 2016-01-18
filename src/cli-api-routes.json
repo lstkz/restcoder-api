@@ -1,5 +1,5 @@
 {
-  "/v1/problems/:problemId/code-templates/:platform": {
+  "/v1/code-templates/:language": {
     "get": {
       "ctrl": "CLIController",
       "method": "getCodeTemplate",
@@ -9,8 +9,7 @@
   "/v1/problems/:problemId/submit": {
     "post": {
       "ctrl": "CLIController",
-      "method": "submit",
-      "public": true
+      "method": "submit"
     }
   }
 }
