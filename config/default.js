@@ -18,5 +18,9 @@ module.exports = {
     "UNIQUE_STRING_LENGTH": 20,
     "JWT_SECRET": "d9d902nfdbncbvaladm1f",
     "SESSION_SECRET": "dkvnvndkjdituworgbcs",
-    "SUBMISSION_QUEUE_NAME": "submissions"
+    "SUBMISSION_QUEUE_NAME": "submissions",
+    "AUTH_COOKIE": {
+        "NAME": "auth",
+        "EXPIRATION": "14d"
+    }
 };

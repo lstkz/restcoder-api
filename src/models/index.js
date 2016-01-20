@@ -12,7 +12,8 @@ var models = {
     BearerToken: createModel('BearerToken'),
     CodeTemplate: createModel('CodeTemplate'),
     Submission: createModel('Submission'),
-    Language: createModel('Language')
+    Language: createModel('Language'),
+    Service: createModel('Service')
 };
 
 function createModel(name) {

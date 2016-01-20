@@ -12,12 +12,17 @@ var SwaggerSpecSchema = new Schema({
 
 var RuntimeSchema = new Schema({
     services: new Schema({
-        base: [String]
+        //map <name>:<Service#id>
+        base: Mixed
     }),
     testSpec: new Schema({
         testCase: {type: String, required: true}
     }),
-    processes: Mixed
+    //map: <process_name>: <options>
+    //<options> is {instances: Number}
+    processes: Mixed,
+    //map <service>: [<process_name>]
+    link: Mixed
 });
 
 module.exports = new Schema({

@@ -27,10 +27,30 @@
       "public": true
     }
   },
-  "/v1/notify-progress/:notifyKey": {
+  "/v1/code-templates/:language": {
+    "get": {
+      "ctrl": "CodeTemplateController",
+      "method": "getCodeTemplate",
+      "public": true
+    }
+  },
+  "/v1/problems/:id/submit": {
     "post": {
-      "ctrl": "CLIController",
+      "ctrl": "SubmissionController",
+      "method": "submit"
+    }
+  },
+  "/v1/submissions/:notifyKey/progress": {
+    "post": {
+      "ctrl": "SubmissionController",
       "method": "notifyProgress",
+      "public": true
+    }
+  },
+  "/v1/submissions/:notifyKey/result": {
+    "post": {
+      "ctrl": "SubmissionController",
+      "method": "submitTestResult",
       "public": true
     }
   }

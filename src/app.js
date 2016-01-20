@@ -15,6 +15,7 @@ var serveStatic = require('serve-static');
 var Path = require('path');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var cookieParser = require('cookie-parser');
 var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
 var logger = require('./common/logger');
@@ -43,11 +44,18 @@ passport.use(new BearerStrategy(function(token, done) {
 
 var app = express();
 app.set('port', config.WEB_SERVER_PORT);
+app.use(function (req, res, next) {
+    if (/^\/problems/.test(req.url)) {
+        req.url = "/index.html";
+    }
+    next();
+});
 app.use(serveStatic(Path.join(__dirname, '../../restcoder-frontend')));
 app.use('/uploads', serveStatic(Path.join(__dirname, '../uploads')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 app.use(function(req, res, next) {
     var domain = createDomain();
@@ -61,17 +69,36 @@ app.use(function(req, res, next) {
     });
 });
 
+app.use(function (req, res, next) {
+   if (req.cookies && req.cookies[config.AUTH_COOKIE.NAME]) {
+       co(function* () {
+           var token = req.cookies[config.AUTH_COOKIE.NAME];
+           var bearerToken = yield BearerToken.findById(token);
+           if (!bearerToken) {
+               return next();
+           }
+           var user = yield User.findById(bearerToken.userId);
+           if (user) {
+               req.user = user;
+           }
+           next();
+       }).catch(next);
+   } else {
+       next();
+   }
+});
+
 //JSONP endpoints
 //app.get("/config", function (req, res) {
 //    res.jsonp(config.PUBLIC);
 //});
-//app.get("/me", function (req, res) {
-//    if (req.user) {
-//        res.jsonp(req.user.toJsonResponse());
-//    } else {
-//        res.jsonp({});
-//    }
-//});
+app.get("/me", function (req, res) {
+    if (req.user) {
+        res.jsonp(req.user.toJsonResponse());
+    } else {
+        res.jsonp({});
+    }
+});
 
 app.use(morgan('dev'));
 
@@ -107,18 +134,6 @@ function loadRouter(path, middlewares, filename) {
 }
 
 
-//api is session based
-var sessionMiddlewares = [
-    session({
-        resave: true,
-        saveUninitialized: true,
-        secret: config.SESSION_SECRET,
-        store: new MongoStore({url: config.MONGODB_URL})
-    }),
-    passport.initialize(),
-    passport.session()
-];
-
 //cli api is JWT token based
 var bearerMiddlewares = [
     function (req, res, next) {
@@ -128,7 +143,7 @@ var bearerMiddlewares = [
         passport.authenticate('bearer', { session: false })(req, res, next);
     }
 ];
-loadRouter("/cli-api", bearerMiddlewares, "./cli-api-routes.json");
+//loadRouter("/cli-api", bearerMiddlewares, "./cli-api-routes.json");
 loadRouter("/api", bearerMiddlewares, "./api-routes.json");
 
 app.use(function (req, res) {

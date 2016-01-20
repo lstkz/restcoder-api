@@ -17,5 +17,5 @@ module.exports = new Schema({
     result: {type: String, "enum": ["PENDING", "FAIL", "PASS", "ERROR"], "default": "PENDING"},
     errorMessage: String,
     testLogUrl: String,
-    testResult: Mixed
+    unitTestResult: Mixed
 });

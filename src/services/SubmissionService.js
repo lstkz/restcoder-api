@@ -13,6 +13,7 @@ const SubmissionQueueService = require("./SubmissionQueueService");
 const Problem = require("../models").Problem;
 const Submission = require("../models").Submission;
 const Language = require("../models").Language;
+const Service = require("../models").Service;
 const SubmissionStatus = require("../Const").SubmissionStatus;
 const helper = require("../common/helper");
 
@@ -78,12 +79,21 @@ function* submitCode(userId, submissionPath, submission) {
     //validate services
     //TODO
 
+    var services = [];
+    //add base services
+    yield _.map(problem.runtime.services.base || {}, (name, alias) => function* () {
+        var service = yield Service.findByIdOrError(name);
+        var ret = _.pick(service, "dockerImage", "envName", "limits", "url", "port");
+        ret.link = problem.runtime.link[alias];
+        services.push(ret);
+    });
+    
     var submissionUrl = config.SUBMISSION_DOWNLOAD_URL + Path.basename(submissionPath);
 
     var notifyKey = helper.randomUniqueString();
 
     var submissionObj = {
-        problem: submission.problemId,
+        problemId: submission.problemId,
         userId: userId,
         url: submissionUrl,
         notifyKey: notifyKey,
@@ -96,14 +106,14 @@ function* submitCode(userId, submissionPath, submission) {
     });
     var message = {
         submissionId: createdSubmission.id,
+        language: submission.language.name,
         notifyKey: notifyKey,
         dockerImage: `${language.dockerImage}:${version}`,
         sourceUrl: submissionObj.url,
         commands: commands,
         testCase: problem.runtime.testSpec.testCase,
         processes: problem.runtime.processes,
-        link: problem.runtime.link,
-        services: []//TODO
+        services: services
     };
 
     yield SubmissionQueueService.addToQueue(message);

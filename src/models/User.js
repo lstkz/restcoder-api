@@ -1,8 +1,9 @@
 
 'use strict';
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const _ = require('underscore');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 module.exports = new Schema({
     username: {type: String, required: true},
@@ -12,3 +13,7 @@ module.exports = new Schema({
     email: {type: String, required: true},
     email_lowered: {type: String, required: true, unique: true}
 });
+
+module.exports.methods.toJsonResponse = function () {
+    return _.pick(this.toJSON(), "id", "username", "email");
+};
