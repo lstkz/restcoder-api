@@ -13,7 +13,9 @@ var models = {
     CodeTemplate: createModel('CodeTemplate'),
     Submission: createModel('Submission'),
     Language: createModel('Language'),
-    Service: createModel('Service')
+    Service: createModel('Service'),
+    UserStat: createModel('UserStat'),
+    UserStatAttempt: createModel('UserStatAttempt')
 };
 
 function createModel(name) {

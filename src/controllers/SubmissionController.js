@@ -7,7 +7,10 @@ const helper = require("../common/helper");
 const BadRequestError =  require("../common/errors").BadRequestError;
 const validate =  require("../common/validator").validate;
 const SubmissionService =  require("../services/SubmissionService");
+const ScoringService =  require("../services/ScoringService");
 const Submission = require("../models").Submission;
+const Problem = require("../models").Problem;
+const User = require("../models").User;
 const socket = require("../socket");
 
 const storage = multer.diskStorage({
@@ -21,8 +24,32 @@ const upload = multer({limits: {fileSize: config.SUBMISSION_MAX_SIZE}, storage: 
 module.exports = {
     submit: [upload.single("file"), helper.wrapExpress(submit)],
     notifyProgress: helper.wrapExpress(notifyProgress),
-    submitTestResult: helper.wrapExpress(submitTestResult)
+    submitTestResult: helper.wrapExpress(submitTestResult),
+    getRecentSubmissions: helper.wrapExpress(getRecentSubmissions)
 };
+
+
+function* getRecentSubmissions(req, res) {
+    var submissions = yield Submission
+        .find({})
+        .select({
+            problemId: 1,
+            userId: 1,
+            language: 1,
+            createdAt: 1,
+            result: 1,
+            errorMessage: 1
+        })
+        .sort("-createdAt")
+        .limit(5);
+    submissions = yield submissions.map(submission => function* () {
+        submission = submission.toJSON();
+        submission.problem = yield Problem.findByIdOrError(submission.problemId, "name");
+        submission.user = yield User.findByIdOrError(submission.userId, "username");
+        return submission;
+    });
+    res.json(submissions);
+}
 
 function* submit(req, res) {
     validate({ id: req.params.id }, { id: "IntegerId" });
@@ -67,5 +94,6 @@ function* submitTestResult(req, res) {
     });
     _.extend(submission, req.body);
     yield submission.save();
+    yield ScoringService.scoreSubmission(submission.id);
     res.status(204).end();
 }

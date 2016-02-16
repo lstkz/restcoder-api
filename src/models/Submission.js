@@ -10,6 +10,8 @@ module.exports = new Schema({
     userId: {type: ObjectId, required: true, ref: "User"},
     url: {type: String, required: true},
     notifyKey: {type: String, required: true, unique: true, index: true},
+    usedServices: {type: [String], "default": []},
+    language: {type: String, required: true},
     createdAt: {type: Date, required: true, "default": Date.now},
 
     //test results

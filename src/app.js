@@ -44,8 +44,14 @@ passport.use(new BearerStrategy(function(token, done) {
 
 var app = express();
 app.set('port', config.WEB_SERVER_PORT);
+app.engine('html', require('ejs').renderFile);
+var frontendUrls = [
+    /^\/problems/,
+    /^\/profile/,
+    /^\/ranking/
+];
 app.use(function (req, res, next) {
-    if (/^\/problems/.test(req.url)) {
+    if (_.any(frontendUrls, reg => reg.test(req.url))) {
         req.url = "/index.html";
     }
     next();
@@ -147,7 +153,8 @@ var bearerMiddlewares = [
 loadRouter("/api", bearerMiddlewares, "./api-routes.json");
 
 app.use(function (req, res) {
-    res.status(404).json({error: "route not found"});
+    res.status(404);
+    res.render(Path.join(__dirname, '../../restcoder-frontend/404.html'));
 });
 
 app.use(function (err, req, res, next) {//jshint ignore:line

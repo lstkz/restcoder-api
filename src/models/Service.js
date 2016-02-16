@@ -8,11 +8,13 @@ module.exports = new Schema({
     dockerImage: {type: String, required: true},
     description:  {type: String, required: true},
     version: {type: String, required: true},
-    type: {type: String, required: true},
     url: {type: String, required: true},
     port: {type: Number, required: true},
     envName: {type: String, required: true},
     limits: {
         memory: {type: String, required: true}
+    },
+    rank: {
+        name: {type: String, required: true}
     }
 });

@@ -40,6 +40,13 @@
       "method": "submit"
     }
   },
+  "/v1/submissions/recent": {
+    "get": {
+      "ctrl": "SubmissionController",
+      "method": "getRecentSubmissions",
+      "public": true
+    }
+  },
   "/v1/submissions/:notifyKey/progress": {
     "post": {
       "ctrl": "SubmissionController",
@@ -51,6 +58,13 @@
     "post": {
       "ctrl": "SubmissionController",
       "method": "submitTestResult",
+      "public": true
+    }
+  },
+  "/v1/ranking": {
+    "get": {
+      "ctrl": "RankingController",
+      "method": "getRanking",
       "public": true
     }
   }

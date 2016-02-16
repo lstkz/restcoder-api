@@ -25,12 +25,23 @@ var RuntimeSchema = new Schema({
     link: Mixed
 });
 
+var StatsSchema = new Schema({
+    attempts: {type: Number, default: 0},
+    uniqueAttempts: {type: Number, default: 0},
+    totalSolved: {type: Number, default: 0},
+    totalUniqueSolved: {type: Number, default: 0}
+});
+
 module.exports = new Schema({
     _id: {type: Number, required: true},
     slug: {type: String, required: true, unique: true},
+    tags: {type: [String], "default": []},
+    level: {type: String, required: true, "enum": ["Very Easy", "Easy", "Medium", "Hard"]},
     name: {type: String, required: true, unique: true},
     content: {type: String, required: true},
     swaggerSpecs: {type: [SwaggerSpecSchema]},
     examples: {type: [Schema.Types.Mixed]},
-    runtime: RuntimeSchema
+    runtime: RuntimeSchema,
+    
+    stats: {type: StatsSchema, default: {}}
 });

@@ -79,9 +79,11 @@ function* submitCode(userId, submissionPath, submission) {
     //validate services
     //TODO
 
+    var usedServices = [];
     var services = [];
     //add base services
     yield _.map(problem.runtime.services.base || {}, (name, alias) => function* () {
+        usedServices.push(name);
         var service = yield Service.findByIdOrError(name);
         var ret = _.pick(service, "dockerImage", "envName", "limits", "url", "port");
         ret.link = problem.runtime.link[alias];
@@ -97,7 +99,9 @@ function* submitCode(userId, submissionPath, submission) {
         userId: userId,
         url: submissionUrl,
         notifyKey: notifyKey,
-        status: SubmissionStatus.PENDING
+        status: SubmissionStatus.PENDING,
+        language: submission.language.name,
+        usedServices
     };
     var createdSubmission = yield Submission.create(submissionObj);
     var commands = {};

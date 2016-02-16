@@ -24,6 +24,7 @@ function run(fn) {
             process.exit();
         })
         .catch(e => {
+        console.log(e);
         console.log(e.stack);
         process.exit();
     });
