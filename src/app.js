@@ -106,6 +106,18 @@ app.get("/me", function (req, res) {
     }
 });
 
+app.get("/api/v1/me", function (req, res) {
+    if (req.user) {
+        res.json({
+            user: req.user.toJsonResponse()
+        });
+    } else {
+        res.json({
+            user: null
+        });
+    }
+});
+
 app.use(morgan('dev'));
 
 
@@ -120,9 +132,9 @@ function loadRouter(path, middlewares, filename) {
                 throw new Error(`method ${endpoint.method} not found in controller ${endpoint.ctrl}`);
             }
             router[method](path, [
-                //function (req, res, next) {
-                //    setTimeout(next, 1000);
-                //},
+                function (req, res, next) {
+                    setTimeout(next, 0);
+                },
                 function (req, res, next) {
                     if (endpoint.public) {
                         return next();

@@ -14,12 +14,8 @@ module.exports = {
 };
 
 function* register(req, res) {
-    var user = yield SecurityService.register(req.body);
-    var token = yield SecurityService.createBearerToken(user.id);
-    res.json({
-        token: token,
-        user: user.toJsonResponse()
-    });
+    yield SecurityService.register(req.body);
+    res.status(201).end();
 }
 
 function* login(req, res) {
