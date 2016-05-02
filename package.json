@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/app",
+    "lint": "eslint -c .eslintrc src config || true",
+    "lint:fix": "eslint -c .eslintrc src config --fix || true",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +22,7 @@
   "dependencies": {
     "adm-zip": "^0.4.7",
     "amqplib": "^0.4.0",
+    "bluebird": "^3.3.5",
     "body-parser": "^1.14.2",
     "co": "^4.6.0",
     "config": "^1.17.1",
@@ -30,6 +33,7 @@
     "express": "^4.13.3",
     "express-session": "^1.12.1",
     "express-socket.io-session": "^1.3.1",
+    "get-parameter-names": "^0.3.0",
     "gravatar": "^1.4.0",
     "joi": "^8.0.5",
     "mongoose": "4.3.5",
@@ -49,6 +53,9 @@
     "winston": "^2.1.1"
   },
   "devDependencies": {
+    "eslint": "^2.8.0",
+    "eslint-config-airbnb-base": "^1.0.1",
+    "eslint-plugin-import": "^1.5.0",
     "faker": "^3.0.1",
     "nodemon": "^1.9.2"
   }

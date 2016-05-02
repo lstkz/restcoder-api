@@ -1,5 +1,5 @@
-"use strict";
-var util = require('util');
+'use strict';
+const util = require('util');
 
 /**
  * Helper function to create generic error object with http status code
@@ -15,23 +15,23 @@ function _createError(name, statusCode) {
      * @param {String} [cause] the error cause
      * @constructor
      */
-    function ErrorCtor(message, cause) {
-        Error.call(this);
-        Error.captureStackTrace(this);
-        this.message = message || name;
-        this.cause = cause;
-        this.httpStatus = statusCode;
-    }
+  function ErrorCtor(message, cause) {
+    Error.call(this);
+    Error.captureStackTrace(this);
+    this.message = message || name;
+    this.cause = cause;
+    this.httpStatus = statusCode;
+  }
 
-    util.inherits(ErrorCtor, Error);
-    ErrorCtor.prototype.name = name;
-    return ErrorCtor;
+  util.inherits(ErrorCtor, Error);
+  ErrorCtor.prototype.name = name;
+  return ErrorCtor;
 }
 
 module.exports = {
-    ValidationError: _createError("ValidationError", 400),
-    BadRequestError: _createError("BadRequestError", 400),
-    NotFoundError: _createError("NotFoundError", 404),
-    ForbiddenError: _createError("ForbiddenError", 403),
-    UnauthorizedError: _createError("UnauthorizedError", 401)
+  ValidationError: _createError('ValidationError', 400),
+  BadRequestError: _createError('BadRequestError', 400),
+  NotFoundError: _createError('NotFoundError', 404),
+  ForbiddenError: _createError('ForbiddenError', 403),
+  UnauthorizedError: _createError('UnauthorizedError', 401)
 };

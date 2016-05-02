@@ -1,32 +1,44 @@
-"use strict";
+'use strict';
 
 const _ = require('underscore');
 const ms = require('ms');
 const config = require('config');
-const helper = require("../common/helper");
-const SecurityService = require("../services/SecurityService");
+const helper = require('../common/helper');
+const SecurityService = require('../services/SecurityService');
 
 
-//Exports
+// Exports
 module.exports = {
-    register: helper.wrapExpress(register),
-    login: helper.wrapExpress(login)
+  register,
+  login,
+  verifyEmail
 };
 
 function* register(req, res) {
-    yield SecurityService.register(req.body);
-    res.status(201).end();
+  yield SecurityService.register(req.body);
+  res.status(201).end();
 }
 
 function* login(req, res) {
-    var user = yield SecurityService.authenticate(req.body.username, req.body.password);
-    var token = yield SecurityService.createBearerToken(user.id);
-    if (req.body.cookie) {
-        var opts = {expires: new Date(Date.now() + ms(config.AUTH_COOKIE.EXPIRATION)), httpOnly: true};
-        res.cookie(config.AUTH_COOKIE.NAME, token, opts);
-    }
-    res.json({
-        token: token,
-        user: user.toJsonResponse()
-    });
+  var user = yield SecurityService.authenticate(req.body.username, req.body.password);
+  var token = yield SecurityService.createBearerToken(user.id);
+  if (req.body.cookie) {
+    var opts = { expires: new Date(Date.now() + ms(config.AUTH_COOKIE.EXPIRATION)), httpOnly: true };
+    res.cookie(config.AUTH_COOKIE.NAME, token, opts);
+  }
+  res.json({
+    token: token,
+    user: user.toJsonResponse()
+  });
+}
+
+
+function* verifyEmail(req, res) {
+  var token = yield SecurityService.verifyEmail(req.params.code);
+  var opts = { expires: new Date(Date.now() + ms(config.AUTH_COOKIE.EXPIRATION)), httpOnly: true };
+  res.cookie(config.AUTH_COOKIE.NAME, token, opts);
+  res.json({
+    token: token,
+    user: user.toJsonResponse()
+  });
 }

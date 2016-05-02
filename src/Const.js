@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 module.exports = {
-    SubmissionStatus: {
-        PENDING: "Pending"
-    }
+  SubmissionStatus: {
+    PENDING: 'Pending'
+  }
 };
