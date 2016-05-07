@@ -20,6 +20,20 @@
       "public": true
     }
   },
+  "/v1/logout": {
+    "post": {
+      "ctrl": "AuthController",
+      "method": "logout",
+      "public": true
+    }
+  },
+  "/v1/verify-email/:code": {
+    "post": {
+      "ctrl": "AuthController",
+      "method": "verifyEmail",
+      "public": true
+    }
+  },
   "/v1/register": {
     "post": {
       "ctrl": "AuthController",
@@ -65,6 +79,20 @@
     "get": {
       "ctrl": "RankingController",
       "method": "getRanking",
+      "public": true
+    }
+  },
+  "/v1/ranking/filter": {
+    "get": {
+      "ctrl": "RankingController",
+      "method": "getRankingFilter",
+      "public": true
+    }
+  },
+  "/v1/user/:username": {
+    "get": {
+      "ctrl": "UserController",
+      "method": "getUser",
       "public": true
     }
   }

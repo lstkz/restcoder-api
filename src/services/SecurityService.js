@@ -6,6 +6,7 @@ const Joi = require('joi');
 const _ = require('underscore');
 const crypto = require('mz/crypto');
 const NotFoundError = require('../common/errors').NotFoundError;
+const BadRequestError = require('../common/errors').BadRequestError;
 const ValidationError = require('../common/errors').ValidationError;
 const UnauthorizedError = require('../common/errors').UnauthorizedError;
 const validate = require('../common/validator').validate;
@@ -17,7 +18,8 @@ const NotificationService = require('./NotificationService');
 module.exports = {
   register,
   authenticate,
-  createBearerToken
+  createBearerToken,
+  verifyEmail
 };
 
 function* register(values) {
@@ -50,7 +52,7 @@ function* register(values) {
 register.schema = {
   values: Joi.object().keys({
     username: Joi.string().min(3).max(12).alphanum().required(),
-    password: Joi.string().min(3).required(),
+    password: Joi.string().min(4).required(),
     email: Joi.string().email().required()
   }).required()
 };
@@ -64,6 +66,9 @@ function* authenticate(username, password) {
   var user = yield User.findOne({ username_lowered: username.toLowerCase() });
   if (!user) {
     throw new UnauthorizedError(errorMsg);
+  }
+  if (!user.isVerified) {
+    throw new BadRequestError('Your account is not verified. Please check activation email.');
   }
   var hash = yield crypto.pbkdf2(password, user.salt, config.SECURITY.ITERATIONS, config.SECURITY.PASSWORD_LENGTH);
   hash = hash.toString('hex');
@@ -79,3 +84,20 @@ function* createBearerToken(userId) {
   yield BearerToken.create({ userId, _id: token });
   return token;
 }
+
+
+function* verifyEmail(code) {
+  var user = yield User.findOne({ emailVerificationCode: code });
+  if (!user) {
+    throw new BadRequestError('Invalid verification code.');
+  }
+  if (user.isVerified) {
+    throw new BadRequestError('Your account is already verified. Please sign in.');
+  }
+  user.isVerified = true;
+  yield user.save();
+  return user;
+}
+verifyEmail.schema = {
+  code: Joi.string().required()
+};

@@ -1,13 +1,15 @@
 'use strict';
 
 const gravatar = require('gravatar');
+const _ = require('underscore');
 const helper = require('../common/helper');
 const validate = require('../common/validator').validate;
 const User = require('../models').User;
 
 // Exports
 module.exports = {
-  getRanking: helper.wrapExpress(getRanking)
+  getRanking,
+  getRankingFilter
 };
 
 function* getRanking(req, res) {
@@ -28,6 +30,7 @@ function* getRanking(req, res) {
     sort = '-stats.score';
     criteria['stats.score'] = { $gt : 0 };
   }
+  const total = yield User.count(criteria);
   var users = yield User
         .find(criteria)
         .sort(sort)
@@ -36,7 +39,8 @@ function* getRanking(req, res) {
   users = yield users.map(u => function* () {
     var user = {
       id: u.id,
-      username: u.username
+      username: u.username,
+      stats: u.stats
     };
     if (!language) {
       user.score = u.stats.score;
@@ -54,5 +58,27 @@ function* getRanking(req, res) {
     user.rank = count + 1;
     return user;
   });
-  res.json(users);
+  res.json({
+    total,
+    items: users
+  });
+}
+
+
+function* getRankingFilter(req, res) {
+  const languages = ['nodejs', 'ruby', 'python', 'go', 'java'];
+  const promises = {
+    any: User.count({'stats.score': { $gt: 0}})
+  };
+  languages.forEach((lang) => {
+    promises[lang] = User.count({
+      ['stats.languages.' + lang]: { $gt : 0 }
+    });
+  });
+  const result = yield promises;
+  const filter = [
+    {name: 'language', items: _.map(result, (count, name) => ({name, count}))}
+  ];
+  filter[0].items.sort((a, b) => b.count - a.count);
+  res.json(filter);
 }

@@ -11,6 +11,7 @@ const SecurityService = require('../services/SecurityService');
 module.exports = {
   register,
   login,
+  logout,
   verifyEmail
 };
 
@@ -32,9 +33,15 @@ function* login(req, res) {
   });
 }
 
+function* logout(req, res) {
+  var opts = { expires: new Date(0), httpOnly: true };
+  res.cookie(config.AUTH_COOKIE.NAME, "", opts);
+  res.redirect('/home')
+}
 
 function* verifyEmail(req, res) {
-  var token = yield SecurityService.verifyEmail(req.params.code);
+  var user = yield SecurityService.verifyEmail(req.params.code);
+  var token = yield SecurityService.createBearerToken(user.id);
   var opts = { expires: new Date(Date.now() + ms(config.AUTH_COOKIE.EXPIRATION)), httpOnly: true };
   res.cookie(config.AUTH_COOKIE.NAME, token, opts);
   res.json({

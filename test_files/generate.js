@@ -12,14 +12,13 @@ const User = require("../src/models").User;
 const Submission = require("../src/models").Submission;
 const Problem = require("../src/models").Problem;
 
-const USER_COUNT = 10;
+const USER_COUNT = 100;
 const PROBLEMS_PER_USER_MIN = 1;
 const PROBLEMS_PER_USER_MAX = 4;
 const SUBMISSIONS_PER_USER = 4;
 const PASS = "pass";
 
 const LANGUAGES = ["nodejs", "ruby", "python", "go", "java"];
-
 var notifyKey = 0;
 
 co(function* () {
