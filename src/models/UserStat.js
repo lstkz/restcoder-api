@@ -15,5 +15,6 @@ var schema = new Schema({
 });
 
 schema.index({ userId: 1, problemId: 1, language: 1, technology: 1 });
+schema.index({ userId: 1, problemId: 1 });
 
 module.exports = schema;

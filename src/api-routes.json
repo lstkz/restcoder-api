@@ -95,5 +95,12 @@
       "method": "getUser",
       "public": true
     }
+  },
+  "/v1/user/:username/submissions": {
+    "get": {
+      "ctrl": "SubmissionController",
+      "method": "searchUserSubmissions",
+      "public": true
+    }
   }
 }

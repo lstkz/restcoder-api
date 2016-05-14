@@ -1,6 +1,7 @@
 'use strict';
 
 
+const Joi = require('joi');
 const AdmZip = require('adm-zip');
 const Path = require('path');
 const config = require('config');
@@ -14,11 +15,13 @@ const Problem = require('../models').Problem;
 const Submission = require('../models').Submission;
 const Language = require('../models').Language;
 const Service = require('../models').Service;
+const User = require('../models').User;
 const SubmissionStatus = require('../Const').SubmissionStatus;
 const helper = require('../common/helper');
 
 module.exports = {
-  submitCode
+  submitCode,
+  searchUserSubmissions
 };
 
 
@@ -45,7 +48,7 @@ function* submitCode(userId, submissionPath, submission) {
       }
     });
 
-    // check if file is a valid zip file
+  // check if file is a valid zip file
   var zip;
   try {
     zip = new AdmZip(submissionPath);
@@ -61,7 +64,7 @@ function* submitCode(userId, submissionPath, submission) {
     throw new BadRequestError(`Unsupported version: "${submission.language.version}". Valid versions: ${versions}`);
   }
 
-    // validate processes
+  // validate processes
   var userProcesses = _.pluck(submission.processes, 'name');
   var requiredProcesses = _.keys(problem.runtime.processes);
   var extra = _.difference(userProcesses, requiredProcesses);
@@ -76,13 +79,13 @@ function* submitCode(userId, submissionPath, submission) {
     throw new BadRequestError(`Missing processes: ${missing.join(', ')}`);
   }
 
-    // validate services
-    // TODO
+  // validate services
+  // TODO
 
   var usedServices = [];
   var services = [];
-    // add base services
-  yield _.map(problem.runtime.services.base || {}, (name, alias) => function* () {
+  // add base services
+  yield _.map(problem.runtime.services.base || {}, (name, alias) => function*() {
     usedServices.push(name);
     var service = yield Service.findByIdOrError(name);
     var ret = _.pick(service, 'dockerImage', 'envName', 'limits', 'url', 'port');
@@ -101,6 +104,7 @@ function* submitCode(userId, submissionPath, submission) {
     notifyKey: notifyKey,
     status: SubmissionStatus.PENDING,
     language: submission.language.name,
+    languageVersion: version,
     usedServices
   };
   var createdSubmission = yield Submission.create(submissionObj);
@@ -123,3 +127,39 @@ function* submitCode(userId, submissionPath, submission) {
   yield SubmissionQueueService.addToQueue(message);
   return createdSubmission;
 }
+
+
+function* searchUserSubmissions(username, offset, limit) {
+  const user = yield User.getByUsername(username);
+  const [submissions, total] = yield [
+    Submission
+      .find({ userId: user.id })
+      .populate('problemId', '_id name')
+      .skip(offset)
+      .limit(limit)
+      .sort({ createdAt: 'desc' }),
+    Submission.count({ userId: user.id })
+  ];
+  const items = submissions.map((item, i) => ({
+    nr: total - offset - i,
+    language: item.language,
+    usedServices: item.usedServices,
+    createdAt: item.createdAt,
+    result: item.result,
+    problem: item.problemId.toJSON()
+  }));
+  return {
+    total,
+    offset,
+    limit,
+    totalPages: Math.ceil(total / limit),
+    pageNumber: Math.floor(offset / limit),
+    items
+  };
+}
+
+searchUserSubmissions.schema = {
+  username: Joi.string().required(),
+  offset: Joi.offset(),
+  limit: Joi.limit()
+};

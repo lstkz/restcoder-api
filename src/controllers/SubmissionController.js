@@ -22,10 +22,11 @@ const storage = multer.diskStorage({
 const upload = multer({ limits: { fileSize: config.SUBMISSION_MAX_SIZE }, storage: storage });
 
 module.exports = {
-  submit: [upload.single('file'), helper.wrapExpress(submit)],
-  notifyProgress: helper.wrapExpress(notifyProgress),
-  submitTestResult: helper.wrapExpress(submitTestResult),
-  getRecentSubmissions: helper.wrapExpress(getRecentSubmissions)
+  submit: [upload.single('file'), submit],
+  notifyProgress,
+  submitTestResult,
+  getRecentSubmissions,
+  searchUserSubmissions
 };
 
 
@@ -64,8 +65,14 @@ function* submit(req, res) {
   }
   submission.problemId = Number(req.params.id);
   var result = yield SubmissionService.submitCode(req.user.id, req.file.path, submission);
+  const problem = yield Problem.findById(result.problemId);
   res.json({
-    submissionId: result.id
+    submissionId: result.id,
+    problemId: result.problemId,
+    problemName: problem.name,
+    language: result.language,
+    languageVersion: result.languageVersion,
+    usedServices: result.usedServices
   });
 }
 
@@ -96,4 +103,9 @@ function* submitTestResult(req, res) {
   yield submission.save();
   yield ScoringService.scoreSubmission(submission.id);
   res.status(204).end();
+}
+
+
+function* searchUserSubmissions(req, res) {
+  res.json(yield SubmissionService.searchUserSubmissions(req.params.username, req.query.offset, req.query.limit))
 }

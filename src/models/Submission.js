@@ -6,12 +6,13 @@ var ObjectId = Schema.Types.ObjectId;
 var Mixed = Schema.Types.Mixed;
 
 module.exports = new Schema({
-  problemId: { type: Number, required: true, ref: 'Problems' },
+  problemId: { type: Number, required: true, ref: 'Problem' },
   userId: { type: ObjectId, required: true, ref: 'User' },
   url: { type: String, required: true },
   notifyKey: { type: String, required: true, unique: true, index: true },
   usedServices: { type: [String], 'default': [] },
   language: { type: String, required: true },
+  languageVersion: { type: String, required: true },
   createdAt: { type: Date, required: true, 'default': Date.now },
 
     // test results

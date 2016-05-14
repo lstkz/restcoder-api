@@ -4,6 +4,7 @@ const _ = require('underscore');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Mixed = mongoose.Schema.Types.Mixed;
+const NotFoundError = require('../common/errors').NotFoundError;
 
 var StatsSchema = new Schema({
   score: { type: Number, 'default': 0 },
@@ -36,5 +37,15 @@ schema.index({ 'stats': 1 });
 schema.methods.toJsonResponse = function () {
   return _.pick(this.toJSON(), 'id', 'username', 'email');
 };
+
+
+schema.statics.getByUsername = function* (username) {
+  var item = yield this.findOne({username_lowered: username.toLowerCase()});
+  if (!item) {
+    throw new NotFoundError(`${username} not found`);
+  }
+  return item;
+};
+
 
 module.exports = schema;
