@@ -1,12 +1,13 @@
 'use strict';
 
-
 const Joi = require('joi');
 const AdmZip = require('adm-zip');
 const Path = require('path');
+const fs = require('fs');
 const config = require('config');
 const semver = require('semver');
 const _ = require('underscore');
+const AWS = require('aws-sdk-promise');
 const NotFoundError = require('../common/errors').NotFoundError;
 const BadRequestError = require('../common/errors').BadRequestError;
 const validate = require('../common/validator').validate;
@@ -18,6 +19,8 @@ const Service = require('../models').Service;
 const User = require('../models').User;
 const SubmissionStatus = require('../Const').SubmissionStatus;
 const helper = require('../common/helper');
+
+const s3 = new AWS.S3();
 
 module.exports = {
   submitCode,
@@ -93,7 +96,21 @@ function* submitCode(userId, submissionPath, submission) {
     services.push(ret);
   });
 
-  var submissionUrl = config.SUBMISSION_DOWNLOAD_URL + Path.basename(submissionPath);
+  var stream = fs.createReadStream(submissionPath);
+  var key = 'app/' + helper.randomUniqueString() + '.zip';
+  var params = {
+    Bucket: config.S3_BUCKET,
+    Key: key,
+    Body: stream,
+    ContentType: 'application/octet-stream'
+  };
+  yield s3.putObject(params).promise();
+  params = {
+    Bucket: config.S3_BUCKET,
+    Key: key
+  };
+
+  const submissionUrl = s3.getSignedUrl('getObject', params).split('?')[0];
 
   var notifyKey = helper.randomUniqueString();
 

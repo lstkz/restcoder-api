@@ -22,6 +22,8 @@
   "dependencies": {
     "adm-zip": "^0.4.7",
     "amqplib": "^0.4.0",
+    "aws-sdk": "^2.3.11",
+    "aws-sdk-promise": "0.0.2",
     "bluebird": "^3.3.5",
     "body-parser": "^1.14.2",
     "co": "^4.6.0",
