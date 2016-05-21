@@ -102,5 +102,12 @@
       "method": "searchUserSubmissions",
       "public": true
     }
+  },
+  "/v1/services": {
+    "get": {
+      "ctrl": "LookupController",
+      "method": "getServices",
+      "public": true
+    }
   }
 }

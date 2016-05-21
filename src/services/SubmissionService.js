@@ -30,28 +30,6 @@ module.exports = {
 
 
 function* submitCode(userId, submissionPath, submission) {
-  validate({ userId, submissionPath, submission },
-    {
-      userId: 'ObjectId',
-      submissionPath: 'String',
-      submission: {
-        problemId: 'IntegerId',
-        language: {
-          name: 'ShortString',
-          version: 'ShortString'
-        },
-        processes: [{
-          name: 'ShortString',
-          command: 'ShortString'
-        }],
-        services: {
-          type: ['ShortString'],
-          required: false,
-          empty: true
-        }
-      }
-    });
-
   // check if file is a valid zip file
   var zip;
   try {
@@ -83,19 +61,36 @@ function* submitCode(userId, submissionPath, submission) {
     throw new BadRequestError(`Missing processes: ${missing.join(', ')}`);
   }
 
+  const servicesMapping = problem.runtime.services.base || {};
+
   // validate services
-  // TODO
+  const selectServices = problem.runtime.services.select;
+  if (selectServices){ 
+    _.each(selectServices, (list, name) => {
+      const current = submission.services[name];
+      if (!current) {
+        throw new BadRequestError(`service ${name} is required`);
+      }
+      if (!_.contains(list, current)) {
+        throw new BadRequestError(`service ${current} is not allowed for ${name}`);
+      }
+    });
+    // and services chosen by user
+    _.extend(servicesMapping, submission.services);
+  }
 
   var usedServices = [];
   var services = [];
   // add base services
-  yield _.map(problem.runtime.services.base || {}, (name, alias) => function*() {
+  yield _.map(servicesMapping, (name, alias) => function*() {
     usedServices.push(name);
     var service = yield Service.findByIdOrError(name);
     var ret = _.pick(service, 'dockerImage', 'envName', 'limits', 'url', 'port');
     ret.link = problem.runtime.link[alias];
     services.push(ret);
   });
+  console.log(usedServices);
+  console.log(services);
 
   // do rate limit check if whole submission data is valid
   yield RateLimitService.check(userId);
@@ -149,6 +144,22 @@ function* submitCode(userId, submissionPath, submission) {
   return createdSubmission;
 }
 
+submitCode.schema = {
+  userId: Joi.objectId().required(),
+  submissionPath: Joi.string().required(),
+  submission: Joi.object().keys({
+    problemId: Joi.number().required(),
+    language: Joi.object().keys({
+      name: Joi.shortString().required(),
+      version: Joi.shortString().required(),
+    }).required(),
+    processes: Joi.array().items({
+      name: Joi.shortString().required(),
+      command: Joi.shortString().required(),
+    }),
+    services: Joi.object().default({}),
+  }).required(),
+};
 
 function* searchUserSubmissions(username, offset, limit) {
   const user = yield User.getByUsername(username);
