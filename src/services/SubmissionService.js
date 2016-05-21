@@ -19,6 +19,7 @@ const Service = require('../models').Service;
 const User = require('../models').User;
 const SubmissionStatus = require('../Const').SubmissionStatus;
 const helper = require('../common/helper');
+const RateLimitService = require('./RateLimitService');
 
 const s3 = new AWS.S3();
 
@@ -95,6 +96,9 @@ function* submitCode(userId, submissionPath, submission) {
     ret.link = problem.runtime.link[alias];
     services.push(ret);
   });
+
+  // do rate limit check if whole submission data is valid
+  yield RateLimitService.check(userId);
 
   var stream = fs.createReadStream(submissionPath);
   var key = 'app/' + helper.randomUniqueString() + '.zip';

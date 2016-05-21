@@ -47,6 +47,8 @@
     "nodemailer-smtp-transport": "^2.4.2",
     "passport": "^0.3.2",
     "passport-http-bearer": "^1.0.1",
+    "redis": "^2.6.0-2",
+    "redis-rate-limiter": "^1.0.2",
     "rox": "0.0.1-14",
     "semver": "^5.1.0",
     "serve-static": "^1.10.0",
