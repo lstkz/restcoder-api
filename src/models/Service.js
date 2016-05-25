@@ -16,5 +16,6 @@ module.exports = new Schema({
   },
   rank: {
     name: { type: String, required: true }
-  }
+  },
+  doneText: String
 });

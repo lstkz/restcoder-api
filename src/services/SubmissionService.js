@@ -85,12 +85,10 @@ function* submitCode(userId, submissionPath, submission) {
   yield _.map(servicesMapping, (name, alias) => function*() {
     usedServices.push(name);
     var service = yield Service.findByIdOrError(name);
-    var ret = _.pick(service, 'dockerImage', 'envName', 'limits', 'url', 'port');
+    var ret = _.pick(service, 'dockerImage', 'envName', 'limits', 'url', 'port', 'doneText', 'id');
     ret.link = problem.runtime.link[alias];
     services.push(ret);
   });
-  console.log(usedServices);
-  console.log(services);
 
   // do rate limit check if whole submission data is valid
   yield RateLimitService.check(userId);
