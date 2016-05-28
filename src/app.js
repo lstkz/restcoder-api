@@ -13,6 +13,7 @@ const _ = require('underscore');
 const morgan = require('morgan');
 const serveStatic = require('serve-static');
 const Path = require('path');
+const jwt = require('jwt-simple');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
@@ -77,7 +78,13 @@ app.use(function (req, res, next) {
 app.use(function (req, res, next) {
   if (req.cookies && req.cookies[config.AUTH_COOKIE.NAME]) {
     co(function* () {
-      const token = req.cookies[config.AUTH_COOKIE.NAME];
+      let token;
+      try {
+        token = jwt.decode(req.cookies[config.AUTH_COOKIE.NAME], config.JWT_SECRET).token
+      } catch (e) {
+        next();
+        return;
+      }
       const bearerToken = yield BearerToken.findById(token);
       if (!bearerToken) {
         return next();
@@ -132,7 +139,7 @@ function loadRouter(path, middlewares, filename) {
       }
       const actions = [
         function (req, res, next) {
-          setTimeout(next, 0);
+          setTimeout(next, 200);
         },
         function (req, res, next) {
           if (endpoint.public) {

@@ -109,5 +109,26 @@
       "method": "getServices",
       "public": true
     }
+  },
+  "/v1/forum/categories": {
+    "get": {
+      "ctrl": "ForumController",
+      "method": "getCategories",
+      "public": true
+    }
+  },
+  "/v1/forum/category/:id/:name?": {
+    "get": {
+      "ctrl": "ForumController",
+      "method": "getCategory",
+      "public": true
+    }
+  },
+  "/v1/forum/topic/:id/:name?": {
+    "get": {
+      "ctrl": "ForumController",
+      "method": "getTopic",
+      "public": true
+    }
   }
 }

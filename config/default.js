@@ -12,8 +12,6 @@ const config = module.exports = {
 //  AMQP_URL: 'amqp://guest:guest@localhost:5672',
   STORAGE_PATH: Path.join(__dirname, '../uploads'),
   SUBMISSION_MAX_SIZE: 5 * 1024 * 1024,
-  SUBMISSION_DOWNLOAD_URL: 'http://89.71.45.130:3500/uploads/',
-//  SUBMISSION_DOWNLOAD_URL: 'http://192.168.0.21:3500/uploads/',
   SECURITY: {
     SALT_LENGTH: 64,
     ITERATIONS: 4096,
@@ -45,7 +43,9 @@ const config = module.exports = {
     port: 6379,
     enable_offline_queue: false
   },
-  RATE_LIMIT: '5/minute'
+  RATE_LIMIT: '5/minute',
+  NODEBB_URL: 'http://localhost:4567',
+  NODEBB_TOKEN: '7f5950f5-f2d0-44aa-8a16-133e77aa49c0'
 };
 
 

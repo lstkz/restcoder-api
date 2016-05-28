@@ -23,6 +23,7 @@ var schema = new Schema({
   salt: { type: String, required: true },
   email: { type: String, required: true },
   email_lowered: { type: String, required: true, unique: true },
+  forumUserId: Number,
   country: String,
   stats: { type: StatsSchema, required: true, 'default': {} },
   emailVerificationCode: { type: String, index: true },

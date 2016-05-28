@@ -14,6 +14,7 @@ const User = require('../models').User;
 const BearerToken = require('../models').BearerToken;
 const helper = require('../common/helper');
 const NotificationService = require('./NotificationService');
+const ForumService = require('./ForumService');
 
 module.exports = {
   register,
@@ -95,6 +96,7 @@ function* verifyEmail(code) {
     throw new BadRequestError('Your account is already verified. Please sign in.');
   }
   user.isVerified = true;
+  user.forumUserId = yield ForumService.createForumUser(user.username, user.email);
   yield user.save();
   return user;
 }

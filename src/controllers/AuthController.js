@@ -5,6 +5,7 @@ const ms = require('ms');
 const config = require('config');
 const helper = require('../common/helper');
 const SecurityService = require('../services/SecurityService');
+const jwt = require('jwt-simple');
 
 
 // Exports
@@ -25,7 +26,9 @@ function* login(req, res) {
   var token = yield SecurityService.createBearerToken(user.id);
   if (req.body.cookie) {
     var opts = { expires: new Date(Date.now() + ms(config.AUTH_COOKIE.EXPIRATION)), httpOnly: true };
-    res.cookie(config.AUTH_COOKIE.NAME, token, opts);
+    var payload = { token, forumUserId: user.forumUserId };
+    var encoded = jwt.encode(payload, config.JWT_SECRET);
+    res.cookie(config.AUTH_COOKIE.NAME, encoded, opts);
   }
   res.json({
     token: token,
@@ -43,9 +46,11 @@ function* verifyEmail(req, res) {
   var user = yield SecurityService.verifyEmail(req.params.code);
   var token = yield SecurityService.createBearerToken(user.id);
   var opts = { expires: new Date(Date.now() + ms(config.AUTH_COOKIE.EXPIRATION)), httpOnly: true };
-  res.cookie(config.AUTH_COOKIE.NAME, token, opts);
+  var payload = { token, forumUserId: user.forumUserId };
+  var encoded = jwt.encode(payload, config.JWT_SECRET);
+  res.cookie(config.AUTH_COOKIE.NAME, encoded, opts);
   res.json({
-    token: token,
+    token: encoded,
     user: user.toJsonResponse()
   });
 }

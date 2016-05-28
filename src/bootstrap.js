@@ -17,3 +17,4 @@ logger.buildService(require('./services/ScoringService'), 'ScoringService');
 logger.buildService(require('./services/SecurityService'), 'SecurityService');
 logger.buildService(require('./services/SubmissionQueueService'), 'SecurityService');
 logger.buildService(require('./services/SubmissionService'), 'SubmissionService');
+logger.buildService(require('./services/ForumService'), 'ForumService');
