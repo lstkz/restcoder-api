@@ -130,5 +130,34 @@
       "method": "getTopic",
       "public": true
     }
+  },
+  "/v1/forum/raw-post/:id": {
+    "get": {
+      "ctrl": "ForumController",
+      "method": "getRawPost"
+    }
+  },
+  "/v1/forum/post/:id": {
+    "get": {
+      "ctrl": "ForumController",
+      "method": "getPostRedirect",
+      "public": true
+    }
+  },
+  "/v1/forum/topics": {
+    "post": {
+      "ctrl": "ForumController",
+      "method": "createTopic"
+    }
+  },
+  "/v1/forum/topics/:id": {
+    "post": {
+      "ctrl": "ForumController",
+      "method": "createPost"
+    },
+    "put": {
+      "ctrl": "ForumController",
+      "method": "updatePost"
+    }
   }
 }

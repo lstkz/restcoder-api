@@ -45,7 +45,8 @@ const config = module.exports = {
   },
   RATE_LIMIT: '5/minute',
   NODEBB_URL: 'http://localhost:4567',
-  NODEBB_TOKEN: '7f5950f5-f2d0-44aa-8a16-133e77aa49c0'
+  NODEBB_TOKEN: '7f5950f5-f2d0-44aa-8a16-133e77aa49c0',
+  NODEBB_MASTER_TOKEN: '48d298dd-c82b-4213-92ef-aa59eaf011cd',
 };
 
 

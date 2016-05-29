@@ -2,6 +2,7 @@
 
 const amqp = require('amqplib');
 const config = require('config');
+const logger = require('../common/logger');
 var connection;
 var channel;
 
@@ -22,8 +23,20 @@ function* init() {
     }
     process.exit();
   });
+  connection.on('error', function (err) {
+    connection = null;
+    channel = null;
+    logger.logFullError(err, 'AMPQ');
+    setTimeout(init, 200);
+  })
 }
 
 function* addToQueue(message) {
-  channel.sendToQueue(config.SUBMISSION_QUEUE_NAME, new Buffer(JSON.stringify(message)), {});
+  const intervalId = setInterval(() => {
+    if (!channel) {
+      return;
+    }
+    clearInterval(intervalId);
+    channel.sendToQueue(config.SUBMISSION_QUEUE_NAME, new Buffer(JSON.stringify(message)), {});
+  }, 50);
 }

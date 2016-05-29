@@ -72,6 +72,9 @@ function* _sendMail(from, to, subject, html) {
  * @param values the properties to add to templates
  */
 function* sendMail(to, type, values) {
+  if (process.env.DATA_GENERATOR) {
+    return;
+  }
   const subject = yield _renderTemplate(`${type}/subject.ejs`, values);
   const body = yield _renderTemplate(`${type}/body.ejs`, values);
   yield _sendMail(config.EMAIL_SENDER_ADDRESS, to, subject, body);

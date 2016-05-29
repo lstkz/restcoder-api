@@ -2,7 +2,7 @@
  * Randomize users and test stats
  */
 "use strict";
-
+process.env.DATA_GENERATOR = '1';
 const _ = require("underscore");
 const co = require("co");
 const faker = require("faker");
