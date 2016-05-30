@@ -1,6 +1,7 @@
 'use strict';
 
 const config = require('config');
+const _ = require('underscore');
 const request = require('superagent-bluebird-promise');
 const logger = require('../common/logger');
 
@@ -14,6 +15,9 @@ module.exports = {
   createPost,
   updatePost,
   getPostRedirect,
+  getUnreadTotal,
+  getUnread,
+  markAllAsRead,
 };
 
 
@@ -26,13 +30,14 @@ request.Request.prototype.completeNodeBB = function* (errorMsg) {
   return body.payload;
 };
 
-function* _get(req, url) {
+function* _get(req, url, query) {
   const headers = {};
   if (req.headers.cookie) {
     headers.cookie = req.headers.cookie;
   }
   const ret = yield request
     .get(config.NODEBB_URL + url)
+    .query(query || {})
     .set(headers)
     .redirects(0)
     .promise();
@@ -72,6 +77,28 @@ function* getTopic(req, res) {
  * @param {Object} req the request
  * @param {Object} res the response
  */
+function* getUnreadTotal(req, res) {
+  res.json({
+    count: yield _get(req, '/api/unread/total')
+  });
+}
+
+/**
+ * @param {Object} req the request
+ * @param {Object} res the response
+ */
+function* getUnread(req, res) {
+  let url = '/api/unread';
+  if (req.params.type === 'new' || req.params.type === 'watched') {
+    url += '/' + req.params.type;
+  }
+  res.json(yield _get(req, url, _.pick(req.query, 'cid', 'page')));
+}
+
+/**
+ * @param {Object} req the request
+ * @param {Object} res the response
+ */
 function* getRawPost(req, res) {
   res.json(yield _get(req, '/api/raw-post/' + req.params.id));
 }
@@ -97,6 +124,20 @@ function* getPostRedirect(req, res) {
     targetUrl += '?page=' + result.pagination.currentPage;
   }
   res.json({url: targetUrl});
+}
+
+/**
+ * @param {Object} req the request
+ * @param {Object} res the response
+ */
+function* markAllAsRead(req, res) {
+  yield request
+    .post(config.NODEBB_URL + '/api/mark-read')
+    .set({
+      cookie: req.headers.cookie
+    })
+    .promise();
+  res.end();
 }
 
 /**

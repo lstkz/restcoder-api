@@ -144,6 +144,18 @@
       "public": true
     }
   },
+  "/v1/forum/unread/total": {
+    "get": {
+      "ctrl": "ForumController",
+      "method": "getUnreadTotal"
+    }
+  },
+  "/v1/forum/unread/:type?": {
+    "get": {
+      "ctrl": "ForumController",
+      "method": "getUnread"
+    }
+  },
   "/v1/forum/topics": {
     "post": {
       "ctrl": "ForumController",
@@ -158,6 +170,12 @@
     "put": {
       "ctrl": "ForumController",
       "method": "updatePost"
+    }
+  },
+  "/v1/forum/mark-read": {
+    "post": {
+      "ctrl": "ForumController",
+      "method": "markAllAsRead"
     }
   }
 }
