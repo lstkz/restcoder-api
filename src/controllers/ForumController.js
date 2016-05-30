@@ -18,6 +18,9 @@ module.exports = {
   getUnreadTotal,
   getUnread,
   markAllAsRead,
+  changeWatching,
+  watchCategory,
+  unwatchCategory,
 };
 
 
@@ -136,6 +139,51 @@ function* markAllAsRead(req, res) {
     .set({
       cookie: req.headers.cookie
     })
+    .promise();
+  res.end();
+}
+
+/**
+ * @param {Object} req the request
+ * @param {Object} res the response
+ */
+function* changeWatching(req, res) {
+  yield request
+    .post(config.NODEBB_URL + `/api/topic/${req.params.id}/watch`)
+    .set({
+      cookie: req.headers.cookie
+    })
+    .send(req.body)
+    .promise();
+  res.end();
+}
+
+/**
+ * @param {Object} req the request
+ * @param {Object} res the response
+ */
+function* watchCategory(req, res) {
+  yield request
+    .post(config.NODEBB_URL + `/api/category/${req.params.id}/watch`)
+    .set({
+      cookie: req.headers.cookie
+    })
+    .send(req.body)
+    .promise();
+  res.end();
+}
+
+/**
+ * @param {Object} req the request
+ * @param {Object} res the response
+ */
+function* unwatchCategory(req, res) {
+  yield request
+    .delete(config.NODEBB_URL + `/api/category/${req.params.id}/watch`)
+    .set({
+      cookie: req.headers.cookie
+    })
+    .send(req.body)
     .promise();
   res.end();
 }

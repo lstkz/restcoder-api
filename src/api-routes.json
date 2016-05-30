@@ -177,5 +177,21 @@
       "ctrl": "ForumController",
       "method": "markAllAsRead"
     }
+  },
+  "/v1/forum/topic/:id/watch": {
+    "post": {
+      "ctrl": "ForumController",
+      "method": "changeWatching"
+    }
+  },
+  "/v1/forum/category/:id/watch": {
+    "post": {
+      "ctrl": "ForumController",
+      "method": "watchCategory"
+    },
+    "delete": {
+      "ctrl": "ForumController",
+      "method": "unwatchCategory"
+    }
   }
 }
