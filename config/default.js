@@ -44,8 +44,10 @@ const config = module.exports = {
     enable_offline_queue: false
   },
   RATE_LIMIT: '5/minute',
+  NODEBB_PROBLEMS_CID: 5,
   NODEBB_URL: 'http://localhost:4567',
   NODEBB_TOKEN: '7f5950f5-f2d0-44aa-8a16-133e77aa49c0',
+  NODEBB_BOT_TOKEN: 'e0b1d0d3-1b21-41e3-bae8-caf4beff3356',
   NODEBB_MASTER_TOKEN: '48d298dd-c82b-4213-92ef-aa59eaf011cd',
 };
 

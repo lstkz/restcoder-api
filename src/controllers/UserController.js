@@ -9,7 +9,8 @@ const ForumService = require('../services/ForumService');
 
 // Exports
 module.exports = {
-  getUser
+  getUser,
+  getUsernameByForumUserId,
 };
 
 function* getUser(req, res) {
@@ -33,4 +34,14 @@ function* getUser(req, res) {
     bgColor: forumUser['icon:bgColor'],
   };
   res.json(ret)
+}
+
+function* getUsernameByForumUserId(req, res) {
+  const user = yield User.findOne({forumUserId: req.params.id});
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
+  res.json({
+    username: user.username
+  })
 }

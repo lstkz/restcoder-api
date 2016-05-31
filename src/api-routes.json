@@ -96,6 +96,13 @@
       "public": true
     }
   },
+  "/v1/forum-user/:id": {
+    "get": {
+      "ctrl": "UserController",
+      "method": "getUsernameByForumUserId",
+      "public": true
+    }
+  },
   "/v1/user/:username/submissions": {
     "get": {
       "ctrl": "SubmissionController",

@@ -45,6 +45,7 @@ module.exports = new Schema({
   swaggerSpecs: { type: [SwaggerSpecSchema] },
   examples: { type: [Schema.Types.Mixed] },
   runtime: RuntimeSchema,
+  forumTopicUrl: String,
 
   stats: { type: StatsSchema, default: {} }
 });
