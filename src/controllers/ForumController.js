@@ -21,6 +21,7 @@ module.exports = {
   changeWatching,
   watchCategory,
   unwatchCategory,
+  getUserPosts,
 };
 
 
@@ -104,6 +105,14 @@ function* getUnread(req, res) {
  */
 function* getRawPost(req, res) {
   res.json(yield _get(req, '/api/raw-post/' + req.params.id));
+}
+
+/**
+ * @param {Object} req the request
+ * @param {Object} res the response
+ */
+function* getUserPosts(req, res) {
+  res.json(yield _get(req, `/api/user/${req.params.username}/posts` + _appendPageQuery(req)));
 }
 
 /**

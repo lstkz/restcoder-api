@@ -144,6 +144,13 @@
       "public": true
     }
   },
+  "/v1/forum/user/:username/posts": {
+    "get": {
+      "ctrl": "ForumController",
+      "method": "getUserPosts",
+      "public": true
+    }
+  },
   "/v1/forum/unread/total": {
     "get": {
       "ctrl": "ForumController",
