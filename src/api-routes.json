@@ -96,6 +96,18 @@
       "public": true
     }
   },
+  "/v1/user/me": {
+    "put": {
+      "ctrl": "UserController",
+      "method": "updateUserInfo"
+    }
+  },
+  "/v1/user/me/picture": {
+    "put": {
+      "ctrl": "UserController",
+      "method": "updateUserPicture"
+    }
+  },
   "/v1/forum-user/:id": {
     "get": {
       "ctrl": "UserController",

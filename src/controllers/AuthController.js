@@ -1,12 +1,11 @@
 'use strict';
 
-const _ = require('underscore');
 const ms = require('ms');
 const config = require('config');
 const helper = require('../common/helper');
 const SecurityService = require('../services/SecurityService');
+const ForumService = require('../services/ForumService');
 const jwt = require('jwt-simple');
-
 
 // Exports
 module.exports = {
@@ -32,7 +31,7 @@ function* login(req, res) {
   }
   res.json({
     token: token,
-    user: user.toJsonResponse()
+    user: yield ForumService.getUserData(user.id),
   });
 }
 
@@ -51,6 +50,6 @@ function* verifyEmail(req, res) {
   res.cookie(config.AUTH_COOKIE.NAME, encoded, opts);
   res.json({
     token: encoded,
-    user: user.toJsonResponse()
+    user: yield ForumService.getUserData(user.id),
   });
 }

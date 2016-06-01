@@ -26,6 +26,7 @@ const User = require('./models').User;
 const BearerToken = require('./models').BearerToken;
 const UnauthorizedError = require('./common/errors').UnauthorizedError;
 const SubmissionQueueService = require('./services/SubmissionQueueService');
+const ForumService = require('./services/ForumService');
 
 
 passport.use(new BearerStrategy(function (token, done) {
@@ -104,19 +105,17 @@ app.use(function (req, res, next) {
 // app.get("/config", function (req, res) {
 //    res.jsonp(config.PUBLIC);
 // });
-app.get('/me', function (req, res) {
+app.get('/me', function (req, res, next) {
   if (req.user) {
-    res.jsonp(req.user.toJsonResponse());
+    co(ForumService.getUserData(req.user.id)).then((user) => res.jsonp(user)).catch(next);
   } else {
     res.jsonp({});
   }
 });
 
-app.get('/api/v1/me', function (req, res) {
+app.get('/api/v1/me', function (req, res, next) {
   if (req.user) {
-    res.json({
-      user: req.user.toJsonResponse()
-    });
+    co(ForumService.getUserData(req.user.id)).then((user) => res.json({user})).catch(next);
   } else {
     res.json({
       user: null

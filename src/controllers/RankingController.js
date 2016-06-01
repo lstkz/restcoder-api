@@ -5,6 +5,7 @@ const _ = require('underscore');
 const helper = require('../common/helper');
 const validate = require('../common/validator').validate;
 const User = require('../models').User;
+const ForumService = require('../services/ForumService');
 
 // Exports
 module.exports = {
@@ -47,7 +48,6 @@ function* getRanking(req, res) {
     } else {
       user.score = u.stats.languages[language];
     }
-    user.image = gravatar.url(u.email, { d: 'identicon', s: 35 });
     var rankCriteria = {};
     if (language) {
       rankCriteria['stats.languages.' + language] = { $gt: user.score };
@@ -56,6 +56,12 @@ function* getRanking(req, res) {
     }
     var count = yield User.count(rankCriteria);
     user.rank = count + 1;
+    const forumUser = yield ForumService.getUserProfile(u.forumUserId);
+    user.picture = forumUser.picture;
+    user.icon ={
+      text: forumUser['icon:text'],
+      bgColor: forumUser['icon:bgColor'],
+    };
     return user;
   });
   res.json({

@@ -45,6 +45,7 @@ function* register(values) {
   var user = new User(values);
   yield user.save();
   yield NotificationService.sendMail(values.email, 'VERIFY_EMAIL', {
+    username: values.username,
     link: config.URLS.VERIFY_EMAIL.replace('{code}', values.emailVerificationCode)
   });
   return user;

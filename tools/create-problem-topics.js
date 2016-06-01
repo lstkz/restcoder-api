@@ -19,7 +19,7 @@ utils.run(function* () {
           content: 'Problem discussion',
         })
         .promise();
-      problem.forumTopicUrl = '/topic' + body.payload.topicData.slug;
+      problem.forumTopicUrl = '/topic/' + body.payload.topicData.slug;
       yield problem.save();
     } catch (e) {
       console.log(problem.id, e.stack || e);
