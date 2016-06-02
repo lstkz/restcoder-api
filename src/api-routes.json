@@ -41,6 +41,13 @@
       "public": true
     }
   },
+  "/v1/forgot-password": {
+    "post": {
+      "ctrl": "AuthController",
+      "method": "forgotPassword",
+      "public": true
+    }
+  },
   "/v1/register": {
     "post": {
       "ctrl": "AuthController",
@@ -123,6 +130,12 @@
     "put": {
       "ctrl": "UserController",
       "method": "changeEmail"
+    }
+  },
+  "/v1/user/me/password": {
+    "put": {
+      "ctrl": "AuthController",
+      "method": "changePassword"
     }
   },
   "/v1/forum-user/:id": {

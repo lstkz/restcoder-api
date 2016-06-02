@@ -20,7 +20,9 @@ module.exports = {
   register,
   authenticate,
   createBearerToken,
-  verifyEmail
+  verifyEmail,
+  changePassword,
+  forgotPassword,
 };
 
 function* register(values) {
@@ -80,6 +82,36 @@ function* authenticate(username, password, errorMsg = 'Invalid username or passw
   }
   return user;
 }
+
+function* changePassword(userId, password) {
+  const user = yield User.findByIdOrError(userId);
+  var hash = yield crypto.pbkdf2(password, user.salt, config.SECURITY.ITERATIONS, config.SECURITY.PASSWORD_LENGTH);
+  user.password = hash.toString('hex');
+  yield user.save();
+}
+
+changePassword.schema = {
+  userId: Joi.string().required(),
+  password: Joi.string().min(4).required(),
+};
+
+function* forgotPassword(email) {
+  const user = yield User.findOne({email_lowered: email.toLowerCase()});
+  if (!user) {
+    throw new NotFoundError('User is not registered');
+  }
+  user.resetPasswordCode = helper.randomUniqueString();
+  yield user.save();
+  yield NotificationService.sendMail(email, 'FORGOT_PASSWORD', {
+    username: user.username,
+    link: config.URLS.FORGOT_PASSWORD.replace('{code}', user.resetPasswordCode)
+  })
+}
+
+forgotPassword.schema = {
+  email: Joi.string().email().required()
+};
+
 
 function* createBearerToken(userId) {
   validate({ userId }, { userId: 'ObjectId' });

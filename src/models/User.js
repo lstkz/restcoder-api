@@ -31,6 +31,8 @@ var schema = new Schema({
   changeEmail: {type: String},
   changeEmailCode: {type: String, index: true},
 
+  resetPasswordCode: {type: String, index: true},
+
   fullName: String,
   quote: String,
   createdAt: {type: Date, default: Date.now},
