@@ -4,9 +4,17 @@
  */
 
 global.Promise = require('bluebird');
+
 const AWS = require('aws-sdk-promise');
-const Joi = require('joi');
 const config = require('config');
+AWS.config.update({
+  s3: '2006-03-01',
+  accessKeyId: config.AWS_ACCESS_KEY,
+  secretAccessKey: config.AWS_SECRET_KEY,
+  region: config.AWS_REGION
+});
+
+const Joi = require('joi');
 const logger = require('./common/logger');
 
 Joi.shortString = () => Joi.string().max(256);
@@ -22,11 +30,3 @@ logger.buildService(require('./services/SubmissionService'), 'SubmissionService'
 logger.buildService(require('./services/ForumService'), 'ForumService');
 logger.buildService(require('./services/ImageService'), 'ImageService');
 logger.buildService(require('./services/UserService'), 'UserService');
-
-
-AWS.config.update({
-  s3: '2006-03-01',
-  accessKeyId: config.AWS_ACCESS_KEY,
-  secretAccessKey: config.AWS_SECRET_KEY,
-  region: config.AWS_REGION
-});
