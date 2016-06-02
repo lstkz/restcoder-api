@@ -4,6 +4,8 @@ const config = require('config');
 const _ = require('underscore');
 const request = require('superagent-bluebird-promise');
 const logger = require('../common/logger');
+const jwt = require('jwt-simple');
+const ADMIN_ID = 1;
 
 //Exports
 module.exports = {
@@ -34,9 +36,16 @@ request.Request.prototype.completeNodeBB = function* (errorMsg) {
   return body.payload;
 };
 
-function* _get(req, url, query) {
+function _createCookie(forumUserId) {
+  const payload = { forumUserId };
+  return `${config.AUTH_COOKIE.NAME}=${jwt.encode(payload, config.JWT_SECRET)}`;
+}
+
+function* _get(req, url, query, forceForumUserID) {
   const headers = {};
-  if (req.headers.cookie) {
+  if (forceForumUserID) {
+    headers.cookie = _createCookie(forceForumUserID);
+  } else if (req.headers.cookie) {
     headers.cookie = req.headers.cookie;
   }
   const ret = yield request
@@ -112,7 +121,7 @@ function* getRawPost(req, res) {
  * @param {Object} res the response
  */
 function* getUserPosts(req, res) {
-  res.json(yield _get(req, `/api/user/${req.params.username}/posts` + _appendPageQuery(req)));
+  res.json(yield _get(req, `/api/user/${req.params.username}/posts` + _appendPageQuery(req), null, ADMIN_ID));
 }
 
 /**
