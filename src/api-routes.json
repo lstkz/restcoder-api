@@ -34,6 +34,13 @@
       "public": true
     }
   },
+  "/v1/change-email/:code": {
+    "post": {
+      "ctrl": "AuthController",
+      "method": "verifyNewEmail",
+      "public": true
+    }
+  },
   "/v1/register": {
     "post": {
       "ctrl": "AuthController",
@@ -106,6 +113,16 @@
     "put": {
       "ctrl": "UserController",
       "method": "updateUserPicture"
+    },
+    "delete": {
+      "ctrl": "UserController",
+      "method": "removeUserPicture"
+    }
+  },
+  "/v1/user/me/email": {
+    "put": {
+      "ctrl": "UserController",
+      "method": "changeEmail"
     }
   },
   "/v1/forum-user/:id": {

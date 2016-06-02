@@ -27,6 +27,10 @@ var schema = new Schema({
   country: String,
   stats: { type: StatsSchema, required: true, 'default': {} },
   emailVerificationCode: { type: String, index: true },
+
+  changeEmail: {type: String},
+  changeEmailCode: {type: String, index: true},
+
   fullName: String,
   quote: String,
   createdAt: {type: Date, default: Date.now},

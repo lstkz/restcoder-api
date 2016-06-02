@@ -26,7 +26,7 @@ const User = require('./models').User;
 const BearerToken = require('./models').BearerToken;
 const UnauthorizedError = require('./common/errors').UnauthorizedError;
 const SubmissionQueueService = require('./services/SubmissionQueueService');
-const ForumService = require('./services/ForumService');
+const UserService = require('./services/UserService');
 
 
 passport.use(new BearerStrategy(function (token, done) {
@@ -101,13 +101,22 @@ app.use(function (req, res, next) {
   }
 });
 
+app.use(function (req, res, next) {
+  res.returnUser = function (userId) {
+    co(UserService.getUserData(userId))
+      .then((user) => res.json({user}))
+      .catch(next);
+  };
+  next();
+});
+
 // JSONP endpoints
 // app.get("/config", function (req, res) {
 //    res.jsonp(config.PUBLIC);
 // });
-app.get('/me', function (req, res, next) {
+app.get('/me', function (req, res) {
   if (req.user) {
-    co(ForumService.getUserData(req.user.id)).then((user) => res.jsonp(user)).catch(next);
+    res.returnUser(req.user.id);
   } else {
     res.jsonp({});
   }
@@ -115,7 +124,7 @@ app.get('/me', function (req, res, next) {
 
 app.get('/api/v1/me', function (req, res, next) {
   if (req.user) {
-    co(ForumService.getUserData(req.user.id)).then((user) => res.json({user})).catch(next);
+    co(UserService.getUserData(req.user.id)).then((user) => res.json({user})).catch(next);
   } else {
     res.json({
       user: null
@@ -137,9 +146,9 @@ function loadRouter(path, middlewares, filename) {
         throw new Error(`method ${endpoint.method} not found in controller ${endpoint.ctrl}`);
       }
       const actions = [
-        function (req, res, next) {
-          setTimeout(next, 200);
-        },
+//        function (req, res, next) {
+//          setTimeout(next, 200);
+//        },
         function (req, res, next) {
           if (endpoint.public) {
             return next();

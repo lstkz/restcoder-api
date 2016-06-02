@@ -59,12 +59,13 @@ register.schema = {
   }).required()
 };
 
-function* authenticate(username, password) {
+
+
+function* authenticate(username, password, errorMsg = 'Invalid username or password') {
   validate({ username, password }, {
     username: 'ShortString',
     password: 'ShortString'
   });
-  var errorMsg = 'Invalid username or password';
   var user = yield User.findOne({ username_lowered: username.toLowerCase() });
   if (!user) {
     throw new UnauthorizedError(errorMsg);

@@ -32,7 +32,8 @@ const config = module.exports = {
   EMAIL_SENDER_ADDRESS: 'noreply@restcoder.com',
   URL_PREFIX: 'http://localhost:3000',
   URLS: defer((cfg) => ({
-    VERIFY_EMAIL: cfg.URL_PREFIX + '/verify-email/{code}'
+    VERIFY_EMAIL: cfg.URL_PREFIX + '/verify-email/{code}',
+    CHANGE_EMAIL: cfg.URL_PREFIX + '/change-email/{code}',
   })),
   'AWS_ACCESS_KEY': process.env.AWS_ACCESS_KEY,
   'AWS_SECRET_KEY': process.env.AWS_SECRET_KEY,

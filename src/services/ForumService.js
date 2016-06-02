@@ -7,13 +7,11 @@ const request = require('superagent-bluebird-promise');
 const config = require('config');
 const logger = require('../common/logger');
 const jwt = require('jwt-simple');
-const User = require('../models').User;
 
 // Exports
 module.exports = {
   createForumUser,
   getUserProfile,
-  getUserData,
   updateUser,
 };
 
@@ -48,21 +46,6 @@ function* getUserProfile(forumUserId) {
 }
 getUserProfile.schema = {
   forumUserId: Joi.number().required()
-};
-
-function* getUserData(userId) {
-  const user = yield User.findByIdOrError(userId);
-  const forumUser = yield getUserProfile(user.forumUserId);
-  const ret = _.pick(user.toJSON(), 'id', 'username', 'email', 'fullName', 'quote');
-  ret.icon ={
-    text: forumUser['icon:text'],
-    bgColor: forumUser['icon:bgColor'],
-  };
-  ret.picture = forumUser.picture;
-  return ret;
-}
-getUserData.schema = {
-  userId: Joi.string().required()
 };
 
 function* updateUser(forumUserId, data) {
