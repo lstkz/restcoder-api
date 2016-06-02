@@ -2,7 +2,6 @@
 
 const Path = require('path');
 const defer = require('config/defer').deferConfig;
-const AWS = require('aws-sdk-promise');
 
 const config = module.exports = {
   API_BASE_URL: 'http://localhost:3500',
@@ -55,11 +54,3 @@ const config = module.exports = {
   
   WORKERS: 2
 };
-
-
-AWS.config.update({
-  s3: '2006-03-01',
-  accessKeyId: config.AWS_ACCESS_KEY,
-  secretAccessKey: config.AWS_SECRET_KEY,
-  region: config.AWS_REGION
-});
