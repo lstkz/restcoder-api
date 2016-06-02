@@ -72,7 +72,7 @@ function* getRanking(req, res) {
 
 
 function* getRankingFilter(req, res) {
-  const languages = ['nodejs', 'ruby', 'python', 'go', 'java'];
+  const languages = ['nodejs', 'ruby', 'python', 'java', 'dotnet'];
   const promises = {
     any: User.count({'stats.score': { $gt: 0}})
   };
