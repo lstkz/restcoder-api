@@ -102,9 +102,9 @@ app.use(function (req, res, next) {
 });
 
 app.use(function (req, res, next) {
-  res.returnUser = function (userId) {
+  res.returnUser = function (userId, token) {
     co(UserService.getUserData(userId))
-      .then((user) => res.json({user}))
+      .then((user) => res.json({user, token}))
       .catch(next);
   };
   next();

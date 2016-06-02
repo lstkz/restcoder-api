@@ -22,7 +22,7 @@ function* _createCookie(user, res) {
   const payload = { token, forumUserId: user.forumUserId };
   const encoded = jwt.encode(payload, config.JWT_SECRET);
   res.cookie(config.AUTH_COOKIE.NAME, encoded, opts);
-  return token;
+  return encoded;
 }
 
 function* register(req, res) {
@@ -33,8 +33,8 @@ function* register(req, res) {
 function* login(req, res) {
   var user = yield SecurityService.authenticate(req.body.username, req.body.password);
   if (req.body.cookie) {
-    yield _createCookie(user, res);
-    res.returnUser(user.id);
+    const token = yield _createCookie(user, res);
+    res.returnUser(user.id, token);
     return;
   }
   res.json({
@@ -51,14 +51,14 @@ function* logout(req, res) {
 
 function* verifyEmail(req, res) {
   var user = yield SecurityService.verifyEmail(req.params.code);
-  yield _createCookie(user, res);
-  res.returnUser(user.id);
+  const token = yield _createCookie(user, res);
+  res.returnUser(user.id, token);
 }
 
 
 function* verifyNewEmail(req, res) {
   var user = yield UserService.verifyNewEmail(req.params.code);
-  yield _createCookie(user, res);
-  res.returnUser(user.id);
+  const token = yield _createCookie(user, res);
+  res.returnUser(user.id, token);
 }
 
