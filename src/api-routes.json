@@ -48,6 +48,13 @@
       "public": true
     }
   },
+  "/v1/reset-password": {
+    "post": {
+      "ctrl": "AuthController",
+      "method": "resetPassword",
+      "public": true
+    }
+  },
   "/v1/register": {
     "post": {
       "ctrl": "AuthController",

@@ -23,7 +23,13 @@ module.exports = {
   verifyEmail,
   changePassword,
   forgotPassword,
+  resetPassword,
 };
+
+function* _createPasswordHash(password, salt) {
+  const hash = yield crypto.pbkdf2(password, salt, config.SECURITY.ITERATIONS, config.SECURITY.PASSWORD_LENGTH);
+  return hash.toString('hex');
+}
 
 function* register(values) {
   var existing = yield User.findOne({ email_lowered: values.email.toLowerCase() });
@@ -36,9 +42,8 @@ function* register(values) {
   }
   var salt = yield crypto.randomBytes(config.SECURITY.SALT_LENGTH);
   salt = salt.toString('hex');
-  var hash = yield crypto.pbkdf2(values.password, salt, config.SECURITY.ITERATIONS, config.SECURITY.PASSWORD_LENGTH);
   values.salt = salt.toString('hex');
-  values.password = hash.toString('hex');
+  values.password = yield _createPasswordHash(values.password, salt);
   values.email_lowered = values.email.toLowerCase();
   values.username_lowered = values.username.toLowerCase();
   values.emailVerificationCode = helper.randomUniqueString();
@@ -75,8 +80,7 @@ function* authenticate(username, password, errorMsg = 'Invalid username or passw
   if (!user.isVerified) {
     throw new BadRequestError('Your account is not verified. Please check activation email.');
   }
-  var hash = yield crypto.pbkdf2(password, user.salt, config.SECURITY.ITERATIONS, config.SECURITY.PASSWORD_LENGTH);
-  hash = hash.toString('hex');
+  const hash = yield _createPasswordHash(password, user.salt);
   if (hash !== user.password) {
     throw new UnauthorizedError(errorMsg);
   }
@@ -85,8 +89,7 @@ function* authenticate(username, password, errorMsg = 'Invalid username or passw
 
 function* changePassword(userId, password) {
   const user = yield User.findByIdOrError(userId);
-  var hash = yield crypto.pbkdf2(password, user.salt, config.SECURITY.ITERATIONS, config.SECURITY.PASSWORD_LENGTH);
-  user.password = hash.toString('hex');
+  user.password = yield _createPasswordHash(password, user.salt);
   yield user.save();
 }
 
@@ -110,6 +113,22 @@ function* forgotPassword(email) {
 
 forgotPassword.schema = {
   email: Joi.string().email().required()
+};
+
+function* resetPassword(password, code) {
+  const user = yield User.findOne({resetPasswordCode: code});
+  if (!user) {
+    throw new NotFoundError('Code invalid or already used');
+  }
+  user.resetPasswordCode = null;
+  user.password = yield _createPasswordHash(password, user.salt);
+  yield user.save();
+  return user;
+}
+
+resetPassword.schema = {
+  password: Joi.string().min(4).required(),
+  code: Joi.string().required(),
 };
 
 

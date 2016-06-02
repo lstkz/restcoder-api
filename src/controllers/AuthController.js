@@ -16,6 +16,7 @@ module.exports = {
   verifyNewEmail,
   changePassword,
   forgotPassword,
+  resetPassword,
 };
 
 function* _createCookie(user, res) {
@@ -73,5 +74,10 @@ function* changePassword(req, res) {
 function* forgotPassword(req, res) {
   yield SecurityService.forgotPassword(req.body.email);
   res.end();
+}
+
+function* resetPassword(req, res) {
+  const user = yield SecurityService.resetPassword(req.body.password, req.body.code);
+  res.returnUser(user.id);
 }
 
