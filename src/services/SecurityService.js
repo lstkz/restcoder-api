@@ -24,6 +24,7 @@ module.exports = {
   changePassword,
   forgotPassword,
   resetPassword,
+  resendActivationLink,
 };
 
 function* _createPasswordHash(password, salt) {
@@ -110,8 +111,26 @@ function* forgotPassword(email) {
     link: config.URLS.FORGOT_PASSWORD.replace('{code}', user.resetPasswordCode)
   })
 }
-
 forgotPassword.schema = {
+  email: Joi.string().email().required()
+};
+
+function* resendActivationLink(email) {
+  const user = yield User.findOne({email_lowered: email.toLowerCase()});
+  if (!user) {
+    throw new NotFoundError('User is not registered');
+  }
+  if (user.isVerified) {
+    throw new BadRequestError('Your account is already verified. Please sign in.');
+  }
+  user.emailVerificationCode = helper.randomUniqueString();
+  yield user.save();
+  yield NotificationService.sendMail(user.email, 'VERIFY_EMAIL', {
+    username: user.username,
+    link: config.URLS.VERIFY_EMAIL.replace('{code}', user.emailVerificationCode)
+  });
+}
+resendActivationLink.schema = {
   email: Joi.string().email().required()
 };
 

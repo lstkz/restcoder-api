@@ -55,6 +55,13 @@
       "public": true
     }
   },
+  "/v1/activation-link": {
+    "post": {
+      "ctrl": "AuthController",
+      "method": "resendActivationLink",
+      "public": true
+    }
+  },
   "/v1/register": {
     "post": {
       "ctrl": "AuthController",

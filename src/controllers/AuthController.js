@@ -17,6 +17,7 @@ module.exports = {
   changePassword,
   forgotPassword,
   resetPassword,
+  resendActivationLink,
 };
 
 function* _createCookie(user, res) {
@@ -79,5 +80,10 @@ function* forgotPassword(req, res) {
 function* resetPassword(req, res) {
   const user = yield SecurityService.resetPassword(req.body.password, req.body.code);
   res.returnUser(user.id);
+}
+
+function* resendActivationLink(req, res) {
+  yield SecurityService.resendActivationLink(req.body.email);
+  res.end();
 }
 
