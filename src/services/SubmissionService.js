@@ -135,7 +135,8 @@ function* submitCode(userId, submissionPath, submission) {
     commands: commands,
     testCase: problem.runtime.testSpec.testCase,
     processes: problem.runtime.processes,
-    services: services
+    services: services,
+    apiBaseUrl: config.API_BASE_URL
   };
 
   yield SubmissionQueueService.addToQueue(message);

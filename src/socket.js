@@ -1,8 +1,9 @@
 
 'use strict';
-
+const config = require('config');
 const socketIO = require('socket.io');
 const co = require('co');
+const redis = require('socket.io-redis');
 const sharedSession = require('express-socket.io-session');
 const Submission = require('./models').Submission;
 const BearerToken = require('./models').BearerToken;
@@ -32,6 +33,7 @@ function notifyProgress(submissionId, data) {
 
 function startUp(server, session) {
   io = socketIO(server);
+  io.adapter(redis(config.REDIS_OPTS));
     // io.use(sharedSession(session));
 
   nsTester = io.of('/tester');

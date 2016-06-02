@@ -6,6 +6,7 @@ if (!process.env.NODE_ENV) {
 require('./bootstrap');
 const config = require('config');
 const co = require('co');
+const sticky = require('sticky-session');
 const express = require('express');
 const winston = require('winston');
 const BearerStrategy = require('passport-http-bearer').Strategy;
@@ -204,9 +205,10 @@ app.use((err, req, res, next) => { // eslint-disable-line
 });
 
 co(function* () {
-  const server = app.listen(app.get('port'), function () {
+  var server = require('http').createServer(app);
+  if (!sticky.listen(server, app.get('port'), {workers: config.WORKERS})) {
     winston.info('Express server listening on port %d in %s mode', app.get('port'), process.env.NODE_ENV);
-  });
+  }
   yield SubmissionQueueService.init();
   require('./socket').startUp(server);
 }).catch(e => {
