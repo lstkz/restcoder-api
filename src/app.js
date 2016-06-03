@@ -12,8 +12,6 @@ const winston = require('winston');
 const BearerStrategy = require('passport-http-bearer').Strategy;
 const _ = require('underscore');
 const morgan = require('morgan');
-const serveStatic = require('serve-static');
-const Path = require('path');
 const jwt = require('jwt-simple');
 const bodyParser = require('body-parser');
 const session = require('express-session');
@@ -46,20 +44,6 @@ passport.use(new BearerStrategy(function (token, done) {
 
 const app = express();
 app.set('port', config.WEB_SERVER_PORT);
-app.engine('html', require('ejs').renderFile);
-const frontendUrls = [
-  /^\/problems/,
-  /^\/profile/,
-  /^\/ranking/
-];
-app.use(function (req, res, next) {
-  if (_.any(frontendUrls, reg => reg.test(req.url))) {
-    req.url = '/index.html';
-  }
-  next();
-});
-app.use(serveStatic(Path.join(__dirname, '../../restcoder-frontend')));
-app.use('/uploads', serveStatic(Path.join(__dirname, '../uploads')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -182,7 +166,7 @@ loadRouter('/api', bearerMiddlewares, './api-routes.json');
 
 app.use(function (req, res) {
   res.status(404);
-  res.render(Path.join(__dirname, '../../restcoder-frontend/404.html'));
+  res.end('Not found');
 });
 
 app.use((err, req, res, next) => { // eslint-disable-line
