@@ -25,7 +25,10 @@ var RuntimeSchema = new Schema({
   // <options> is {instances: Number}
   processes: Mixed,
   // map <service>: [<process_name>]
-  link: Mixed
+  link: Mixed,
+
+  // map <process_name>: <key value map>
+  customEnv: Mixed
 });
 
 var StatsSchema = new Schema({

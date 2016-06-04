@@ -135,6 +135,7 @@ function* submitCode(userId, submissionPath, submission) {
     commands: commands,
     testCase: problem.runtime.testSpec.testCase,
     processes: problem.runtime.processes,
+    customEnv: problem.runtime.customEnv || {},
     services: services,
     apiBaseUrl: config.API_BASE_URL
   };
