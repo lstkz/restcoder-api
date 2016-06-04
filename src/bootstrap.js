@@ -30,3 +30,4 @@ logger.buildService(require('./services/SubmissionService'), 'SubmissionService'
 logger.buildService(require('./services/ForumService'), 'ForumService');
 logger.buildService(require('./services/ImageService'), 'ImageService');
 logger.buildService(require('./services/UserService'), 'UserService');
+logger.buildService(require('./services/MiscService'), 'MiscService');

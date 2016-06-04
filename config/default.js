@@ -5,6 +5,7 @@ const defer = require('config/defer').deferConfig;
 
 const config = module.exports = {
   API_BASE_URL: 'http://localhost:3500',
+  ADMIN_EMAIL: 'sirmims@gmail.com',
   WEB_SERVER_PORT: 3500,
   LOG_LEVEL: 'debug',
   MONGODB_URL: 'mongodb://127.0.0.1:27017/restcoder',

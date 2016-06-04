@@ -69,6 +69,13 @@
       "public": true
     }
   },
+  "/v1/contact": {
+    "post": {
+      "ctrl": "MiscController",
+      "method": "contact",
+      "public": true
+    }
+  },
   "/v1/code-templates/:language": {
     "get": {
       "ctrl": "CodeTemplateController",
