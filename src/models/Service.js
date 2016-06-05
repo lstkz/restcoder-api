@@ -15,7 +15,7 @@ module.exports = new Schema({
     memory: { type: String, required: true }
   },
   rank: {
-    name: { type: String, required: true }
+    name: { type: String }
   },
   doneText: String
 });
