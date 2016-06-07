@@ -25,7 +25,7 @@ Joi.objectId = () => Joi.string().regex(/^[a-f0-9]{24}$/);
 logger.buildService(require('./services/NotificationService'), 'NotificationService');
 logger.buildService(require('./services/ScoringService'), 'ScoringService');
 logger.buildService(require('./services/SecurityService'), 'SecurityService');
-logger.buildService(require('./services/SubmissionQueueService'), 'SecurityService');
+logger.buildService(require('./services/SubmissionQueueService'), 'SubmissionQueueService');
 logger.buildService(require('./services/SubmissionService'), 'SubmissionService');
 logger.buildService(require('./services/ForumService'), 'ForumService');
 logger.buildService(require('./services/ImageService'), 'ImageService');
