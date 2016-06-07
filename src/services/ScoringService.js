@@ -12,7 +12,8 @@ const Service = require('../models').Service;
 // Exports
 module.exports = {
   scoreSubmission,
-  recalculateStats
+  recalculateStats,
+  clearStats,
 };
 
 var scoring = {
@@ -189,4 +190,34 @@ function* recalculateStats() {
   for (var i = 0; i < actions.length; i++) {
     yield actions[i];
   }
+}
+
+
+
+function* clearStats(username) {
+  const user = yield User.findOne({username: username});
+  const submissions = yield Submission.find({userId: user.id});
+  const uniqueProblems = {};
+  const uniqueSolvedProblems = {};
+  for (let submission of submissions) {
+    const update = {
+      'stats.attempts': -1
+    };
+    if (submission.result === 'PASS') {
+      update['stats.totalSolved'] = -1;
+      if (!uniqueSolvedProblems[submission.problemId]) {
+        update['stats.totalUniqueSolved'] = -1;
+        uniqueSolvedProblems[submission.problemId] = true;
+      }
+    }
+    if (!uniqueProblems[submission.problemId]) {
+      update['stats.uniqueAttempts'] = -1;
+      uniqueProblems[submission.problemId] = true;
+    }
+    yield Problem.findByIdAndUpdate(submission.problemId, { $inc: update });
+    yield submission.remove();
+  }
+  yield UserStat.remove({userId: user.id});
+  user.stats = {};
+  yield user.save();
 }
