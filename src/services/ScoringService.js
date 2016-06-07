@@ -201,7 +201,7 @@ function* clearStats(username) {
   const uniqueSolvedProblems = {};
   for (let submission of submissions) {
     if (submission.result === 'PENDING') {
-      return;
+      continue;
     }
     const update = {
       'stats.attempts': -1
