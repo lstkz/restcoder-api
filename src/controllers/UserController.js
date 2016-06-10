@@ -32,7 +32,7 @@ module.exports = {
 };
 
 function* getUser(req, res) {
-  const user = yield User.findOne({username_lowered: req.params.username});
+  const user = yield User.findOne({username_lowered: req.params.username.toLowerCase()});
   if (!user) {
     throw new NotFoundError('User not found');
   }
