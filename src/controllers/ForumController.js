@@ -121,7 +121,7 @@ function* getRawPost(req, res) {
  * @param {Object} res the response
  */
 function* getUserPosts(req, res) {
-  res.json(yield _get(req, `/api/user/${req.params.username}/posts` + _appendPageQuery(req), null, ADMIN_ID));
+  res.json(yield _get(req, `/api/user/${req.params.username.toLowerCase()}/posts` + _appendPageQuery(req), null, ADMIN_ID));
 }
 
 /**
