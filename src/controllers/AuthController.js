@@ -30,8 +30,9 @@ function* _createCookie(user, res) {
 }
 
 function* register(req, res) {
-  yield SecurityService.register(req.body);
-  res.status(201).end();
+  const user = yield SecurityService.register(req.body);
+  const token = yield _createCookie(user, res);
+  res.returnUser(user.id, token);
 }
 
 function* login(req, res) {

@@ -30,6 +30,7 @@ module.exports = {
 
 
 function* submitCode(userId, submissionPath, submission) {
+  const user = yield User.findByIdOrError(userId);
   // check if file is a valid zip file
   var zip;
   try {
@@ -94,7 +95,7 @@ function* submitCode(userId, submissionPath, submission) {
   yield RateLimitService.check(userId);
 
   var stream = fs.createReadStream(submissionPath);
-  var key = 'app/' + helper.randomUniqueString() + '.zip';
+  var key = 'app/' + user.username + '_' + helper.randomUniqueString() + '.zip';
   var params = {
     Bucket: config.S3_BUCKET,
     Key: key,

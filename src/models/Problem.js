@@ -49,6 +49,7 @@ module.exports = new Schema({
   examples: { type: [Schema.Types.Mixed] },
   runtime: RuntimeSchema,
   forumTopicUrl: String,
+  postmanCollectionId: String,
 
   stats: { type: StatsSchema, default: {} }
 });

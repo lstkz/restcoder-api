@@ -3,6 +3,7 @@
 
 const config = require('config');
 const Joi = require('joi');
+const co = require('co');
 const _ = require('underscore');
 const crypto = require('mz/crypto');
 const NotFoundError = require('../common/errors').NotFoundError;
@@ -49,13 +50,14 @@ function* register(values) {
   values.username_lowered = values.username.toLowerCase();
   values.emailVerificationCode = helper.randomUniqueString();
   values.isVerified = false;
+  values.forumUserId = yield ForumService.createForumUser(values.username, values.email);
 
   var user = new User(values);
   yield user.save();
-  yield NotificationService.sendMail(values.email, 'VERIFY_EMAIL', {
+  co(NotificationService.sendMail(values.email, 'VERIFY_EMAIL', {
     username: values.username,
     link: config.URLS.VERIFY_EMAIL.replace('{code}', values.emailVerificationCode)
-  });
+  }));
   return user;
 }
 
@@ -78,9 +80,9 @@ function* authenticate(username, password, errorMsg = 'Invalid username or passw
   if (!user) {
     throw new UnauthorizedError(errorMsg);
   }
-  if (!user.isVerified) {
-    throw new BadRequestError('Your account is not verified. Please check activation email.');
-  }
+//  if (!user.isVerified) {
+//    throw new BadRequestError('Your account is not verified. Please check activation email.');
+//  }
   const hash = yield _createPasswordHash(password, user.salt);
   if (hash !== user.password) {
     throw new UnauthorizedError(errorMsg);
@@ -168,7 +170,6 @@ function* verifyEmail(code) {
     throw new BadRequestError('Your account is already verified. Please sign in.');
   }
   user.isVerified = true;
-  user.forumUserId = yield ForumService.createForumUser(user.username, user.email);
   yield user.save();
   return user;
 }
