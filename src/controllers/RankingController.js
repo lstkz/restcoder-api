@@ -20,7 +20,7 @@ function* getRanking(req, res) {
   validate({ limit, offset, language }, {
     limit: { type: 'Integer', min: 1, max: 100 },
     offset: { type: 'Integer', min: 0 },
-    language: { type: 'enum', 'enum': ['nodejs', 'ruby', 'python', 'go', 'java'], required: false }
+    language: { type: 'enum', 'enum': ['nodejs', 'ruby', 'python', 'go', 'java', 'dotnet'], required: false }
   });
   var sort;
   var criteria = {};
