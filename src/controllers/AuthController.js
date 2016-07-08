@@ -18,6 +18,7 @@ module.exports = {
   forgotPassword,
   resetPassword,
   resendActivationLink,
+  socialAuth,
 };
 
 function* _createCookie(user, res) {
@@ -88,3 +89,12 @@ function* resendActivationLink(req, res) {
   res.end();
 }
 
+function* socialAuth(req, res) {
+  const {user, isNew} = yield SecurityService.socialAuth(req.body.accessToken, req.body.provider, req.body.username);
+  if (!user) {
+    res.json({isNew});
+    return;
+  }
+  const token = yield _createCookie(user, res);
+  res.returnUser(user.id, token, {isNew});
+}

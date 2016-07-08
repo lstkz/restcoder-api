@@ -50,6 +50,8 @@ module.exports = new Schema({
   runtime: RuntimeSchema,
   forumTopicUrl: String,
   postmanCollectionId: String,
+  localSetup: String,
+  c9Setup: String,
 
   stats: { type: StatsSchema, default: {} }
 });

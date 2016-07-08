@@ -87,9 +87,9 @@ app.use(function (req, res, next) {
 });
 
 app.use(function (req, res, next) {
-  res.returnUser = function (userId, token) {
+  res.returnUser = function (userId, token, data) {
     co(UserService.getUserData(userId))
-      .then((user) => res.json({user, token}))
+      .then((user) => res.json({user, token, data}))
       .catch(next);
   };
   next();

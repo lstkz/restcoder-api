@@ -76,13 +76,10 @@ function* changeEmail(userId, email) {
   if (existing) {
     throw new ValidationError('Email address is already registered');
   }
-  user.changeEmail = email;
-  user.changeEmailCode = helper.randomUniqueString();
+  yield ForumService.updateUser(user.forumUserId, {email});
+  user.email = email;
+  user.email_lowered = email.toLowerCase();
   yield user.save();
-  yield NotificationService.sendMail(email, 'CHANGE_EMAIL', {
-    username: user.username,
-    link: config.URLS.CHANGE_EMAIL.replace('{code}', user.changeEmailCode)
-  })
 }
 
 changeEmail.schema = {

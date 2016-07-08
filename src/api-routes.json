@@ -20,6 +20,13 @@
       "public": true
     }
   },
+  "/v1/login/social": {
+    "post": {
+      "ctrl": "AuthController",
+      "method": "socialAuth",
+      "public": true
+    }
+  },
   "/v1/logout": {
     "post": {
       "ctrl": "AuthController",

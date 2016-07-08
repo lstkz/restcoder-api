@@ -5,6 +5,7 @@ const config = require('config');
 const Joi = require('joi');
 const co = require('co');
 const _ = require('underscore');
+const request = require('superagent-bluebird-promise');
 const crypto = require('mz/crypto');
 const NotFoundError = require('../common/errors').NotFoundError;
 const BadRequestError = require('../common/errors').BadRequestError;
@@ -26,6 +27,7 @@ module.exports = {
   forgotPassword,
   resetPassword,
   resendActivationLink,
+  socialAuth,
 };
 
 function* _createPasswordHash(password, salt) {
@@ -175,4 +177,95 @@ function* verifyEmail(code) {
 }
 verifyEmail.schema = {
   code: Joi.string().required()
+};
+
+
+function* _getOAuthProfile(accessToken, provider) {
+  if (provider === 'facebook') {
+    const {text} = yield request
+      .get('https://graph.facebook.com/me?fields=email')
+      .query({
+        access_token: accessToken
+      })
+      .promise();
+    return JSON.parse(text);
+  }
+  if (provider === 'google') {
+    const {body} = yield request
+      .get('https://www.googleapis.com/oauth2/v1/userinfo?alt=json')
+      .query({
+        access_token: accessToken
+      })
+      .promise();
+    return body;
+  }
+  if (provider === 'github') {
+    const {body: {id}} = yield request
+      .get('https://api.github.com/user')
+      .query({
+        access_token: accessToken
+      })
+      .promise();
+    const {body: emails} = yield request
+      .get('https://api.github.com/user/emails')
+      .query({
+        access_token: accessToken
+      })
+      .promise();
+    const emailData = _.findWhere(emails, {primary: true, verified: true});
+    return {
+      id: String(id),
+      email: emailData && emailData.email
+    };
+  }
+}
+
+function* socialAuth(accessToken, provider, username) {
+  if (username && (yield User.findOne({ username_lowered: username.toLowerCase() }))) {
+    throw new ValidationError('Username is already registered');
+  }
+
+  const profile = yield _getOAuthProfile(accessToken, provider);
+  if (!profile.email) {
+    throw new BadRequestError('Your account does not have associated email address');
+  }
+  let user = yield User.findOne({
+    [`social.${provider}Id`]: profile.id
+  });
+  if (user) {
+    return {user, isNew: false};
+  }
+  user = yield User.findOne({ email_lowered: profile.email.toLowerCase() });
+  if (user) {
+    if (!user.social) {
+      user.social = {};
+    }
+    user.social[`${provider}Id`] = profile.id;
+    yield user.save();
+    return {user, isNew: false};
+  }
+  if (!username) {
+    return {isNew: true};
+  }
+  var salt = yield crypto.randomBytes(config.SECURITY.SALT_LENGTH);
+  salt = salt.toString('hex');
+  const values = {
+    salt: salt.toString('hex'),
+    password: yield _createPasswordHash(helper.randomString(50), salt),
+    email: profile.email,
+    email_lowered: profile.email.toLowerCase(),
+    username,
+    username_lowered: username.toLowerCase(),
+    isVerified: true,
+    forumUserId: yield ForumService.createForumUser(username, profile.email)
+  };
+  user = new User(values);
+  yield user.save();
+  return {user, isNew: true};
+}
+
+socialAuth.schema = {
+  accessToken: Joi.string().required(),
+  provider: Joi.string().allow(['facebook', 'google', 'github']).required(),
+  username: Joi.string().min(3).max(12).alphanum(),
 };

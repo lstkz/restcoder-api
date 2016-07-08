@@ -32,7 +32,11 @@ var schema = new Schema({
   changeEmailCode: {type: String, index: true},
 
   resetPasswordCode: {type: String, index: true},
-
+  social: {
+    facebookId: String,
+    githubId: String,
+    googleId: String,
+  },
   fullName: String,
   quote: String,
   createdAt: {type: Date, default: Date.now},
