@@ -14,7 +14,7 @@ module.exports = {
 };
 
 function* searchProblems(req, res) {
-  var problems = yield Problem.find({}).sort('_id').select('-runtime -content -examples -swaggerSpecs');
+  var problems = yield Problem.find({hidden: {$ne: true}}).sort('_id').select('-runtime -content -examples -swaggerSpecs');
   if (req.user) {
     var result = yield [
       UserStat.find({ userId: req.user.id }),

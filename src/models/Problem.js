@@ -47,6 +47,7 @@ module.exports = new Schema({
   content: { type: String, required: true },
   swaggerSpecs: { type: [SwaggerSpecSchema] },
   examples: { type: [Schema.Types.Mixed] },
+  hidden: Boolean,
   runtime: RuntimeSchema,
   forumTopicUrl: String,
   postmanCollectionId: String,
