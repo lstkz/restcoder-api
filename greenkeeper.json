@@ -1,0 +1,10 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "data/code-templates/nodejs/Base Express App/files/package.json",
+        "package.json"
+      ]
+    }
+  }
+}
